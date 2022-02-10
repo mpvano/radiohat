@@ -1,4 +1,4 @@
-/************************************* February 9, 2022 at 8:42:14 PM CST
+/************************************* February 10, 2022 at 1:30:14 PM CST
 *****************************************************************************
 *
 *	A simple example program for a Zero IF Quadrature transceiver
@@ -23,6 +23,11 @@
 *		Controls and displays VSWR bridge
 *
 *	Still needs DSP modules and any Audio plumbing setup needed
+*
+*	If there is a file named "CALFACTOR.txt in the same directory
+*		as the binary program file and if it contains a valid ascii
+*		value for the VFO calibration factor, that will be used instead
+*		of the default value compiled into the program.
 *
 *	one way to build this is:
 *		c++ THISSOURCEFILE.cpp si5351pi.cpp -lncurses -lwiringpi
@@ -366,11 +371,11 @@ unsigned int val1 = (readSGTL(reg)&(~iMask))|val;
 //	These are the initial levels for the gain controls
 float gHpVol = 0.88;
 float gLoVol = 0.8;			//	seems to be normal output setting
-float gMicVol = 0.3;		//	has 4 steps, +0, +20, +30, +40
+float gMicVol = 0.0;		//	has 4 steps, +0, +20, +30, +40
 float gADCVol = 0.99;		//	default maximum gain on receive
 float gDACVol = 0.94;		//	leave a little headroom for now
-bool gAGCEnabled = true;
-float gAGCLevel = 0.20;		//	default to reasonable gain
+bool gAGCEnabled = false;
+float gAGCLevel = 0.0;		//	default to reasonable gain
 float gAGCAttack = 0.02;	//	distortion if attack is too fast
 float gAGCHang = 0.97;		//	very long decay for now
 
@@ -865,6 +870,31 @@ static uint32_t lastFreqSent = 0;
 	gNeedsVFOUpdate = false;		
 }
 
+long getCalibrationFactor(char * progname)
+{
+long calfactor = gCalibrationFactor;
+char * dirptr;
+char configPath[128];
+char buffer[128] =""; // Buffer to store data
+FILE * theFile = NULL;
+
+	strcpy(configPath,progname);
+	dirptr = strrchr(configPath, '/');
+	*dirptr = 0;
+	strcat(configPath,"/CALFACTOR.txt");
+	if ((theFile = fopen(configPath, "r")) != NULL)
+		{
+		int count = fread(&buffer, sizeof(char), 64, theFile);
+		fclose(theFile);
+		if (count)
+			{
+			long temp = strtol(buffer, NULL, 10);
+			if ((temp < 100000) && (temp > -100000))
+				calfactor = temp;
+			}
+  		}
+  	return calfactor;
+}
 
 ////////////////////////////////////////////////////////////////////////
 //	initialize the Si5351 chip with args and settings from VFO_si5351.h
@@ -1213,6 +1243,7 @@ const int num_weights = sizeof(weights)/sizeof(*weights);
 	return true;
 }
 
+
 /****************************************************************************
 *****************************************************************************
 *	Main
@@ -1223,9 +1254,15 @@ int main(int argc, char * argv[])
 bool initonly = (argc == 2) && (*(argv[1]) == '-') && (*(argv[1]+1) == 'i');
 
 	if (initonly)
+		{
+		initGPIO();
+		long cfactor = getCalibrationFactor(argv[0]);
+		setupSynthesizers(cfactor, gVFOA, false);
 		fprintf(stderr,"%s: Devices initialized only!\n", *argv);
+		}
 		
-	if (initGPIO())
+		
+	else if (initGPIO())
 		{
 		WINDOW *w = initscr();		// ncurses setup
 		w = initscr();
@@ -1234,7 +1271,8 @@ bool initonly = (argc == 2) && (*(argv[1]) == '-') && (*(argv[1]+1) == 'i');
 		keypad(w,true);
 		atexit([]{ endwin(); });
 	
-		setupSynthesizers(gCalibrationFactor, gVFOA, false);
+		long cfactor = getCalibrationFactor(argv[0]);
+		setupSynthesizers(cfactor, gVFOA, false);
 		
 		if (initSGTL_I2C(SGTL5000_I2C_ADDR_CS_LOW) < 0)
 			fprintf(stderr,"Unable to open I2C bus for SGTL5000\n");
