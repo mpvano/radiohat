@@ -1,0 +1,51 @@
+<!DOCTYPE patchbay>
+<patchbay name="WSJTX" version="0.5.0">
+ <output-sockets>
+  <socket exclusive="off" type="jack-audio" name="system" client="system">
+   <plug>capture_1</plug>
+   <plug>capture_2</plug>
+  </socket>
+  <socket exclusive="off" type="jack-audio" name="PulseAudio JACK Sink" client="PulseAudio JACK Sink">
+   <plug>front-left</plug>
+   <plug>front-right</plug>
+  </socket>
+  <socket exclusive="off" type="jack-audio" name="toWSJTXfromGRC" client="toWSJTXfromGRC">
+   <plug>out0</plug>
+  </socket>
+  <socket exclusive="off" type="jack-audio" name="toHatfromGRC" client="toHatfromGRC">
+   <plug>out0</plug>
+   <plug>out1</plug>
+  </socket>
+  <socket exclusive="off" type="alsa-midi" name="Midi Through" client="Midi Through">
+   <plug>Midi Through Port-0</plug>
+  </socket>
+ </output-sockets>
+ <input-sockets>
+  <socket exclusive="off" type="jack-audio" name="system" client="system">
+   <plug>playback_1</plug>
+   <plug>playback_2</plug>
+  </socket>
+  <socket exclusive="off" type="jack-audio" name="PulseAudio JACK Source" client="PulseAudio JACK Source">
+   <plug>front-left</plug>
+   <plug>front-right</plug>
+  </socket>
+  <socket exclusive="off" type="jack-audio" name="fromWSJTXtoGRC" client="fromWSJTXtoGRC">
+   <plug>in0</plug>
+  </socket>
+  <socket exclusive="off" type="jack-audio" name="toGRCfromHat" client="toGRCfromHat">
+   <plug>in0</plug>
+   <plug>in1</plug>
+  </socket>
+  <socket exclusive="off" type="alsa-midi" name="Midi Through" client="Midi Through">
+   <plug>Midi Through Port-0</plug>
+  </socket>
+ </input-sockets>
+ <slots/>
+ <cables>
+  <cable output="system" type="jack-audio" input="toGRCfromHat"/>
+  <cable output="PulseAudio JACK Sink" type="jack-audio" input="fromWSJTXtoGRC"/>
+  <cable output="toWSJTXfromGRC" type="jack-audio" input="PulseAudio JACK Source"/>
+  <cable output="toHatfromGRC" type="jack-audio" input="system"/>
+ </cables>
+</patchbay>
+

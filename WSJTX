@@ -1,0 +1,36 @@
+#!/bin/bash
+# Helps automate startup of WSJT-X on radiohat prototype
+cd ~/radiohead
+#	make sure SGTL5000 sound card is initialized
+~/radiohead/pitrans1/pitrans -i
+
+#	add redirectors for using jack from WSJTX
+#	This module may not be preinstalled you may need to
+#	"sudo apt-get install pulseaudio-module-jack"
+#	it also confuses Alsa use - remove it when done
+pacmd unload-module module-jack-source
+pacmd unload-module module-jack-sink
+pacmd load-module module-jack-source
+pacmd load-module module-jack-sink
+killall jackd
+
+# assumes qjackctl is configured to load correct presets and
+# patch file
+qjackctl & 
+
+sleep 4
+wsjtx &
+
+
+# switch gnu radio audio configuration to use jackd
+cp ~/radiohead/jackscripts/config.conf.jack ~/.gnuradio/config.conf
+
+#	load the GnuRadio DSP module in FOREGROUND
+#	This script will wait here for it to end
+~/radiohead/WSJTX1.py
+
+# switch gnu radio audio configuration back to use alsa
+cp ~/radiohead/jackscripts/config.conf.alsa ~/.gnuradio/config.conf
+pacmd unload-module module-jack-source
+pacmd unload-module module-jack-sink
+

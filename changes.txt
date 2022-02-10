@@ -1,0 +1,57 @@
+Raspberry Pi 3b+ on Touch screen display
+
+1.	Installed Buster 29-April-2021
+2.	Changed resolution to 1280x720 for touchscreen
+3.	Changed password to the irish one
+4.	Installed VNC with brian's song pwd
+5.	reconfigured notepad
+6.	Installed resource monitor and temperature monitor to task bar
+7.	sudo apt-get install "libncurses-dev"
+8.	sudo apt-get install "gnuradio"
+9.	sudo apt-get install "libliquid-dev"
+10.	Used "preferences add/remove software" to add Open SDR protocol 1,
+	LimeSDR and GnuRadio blocks from the OSMOSdr project
+11. Changed /etc/apt/sources.list to use http://mirror.umd.edu/raspbian/raspbian
+12.	Installed Quisk from raspbian programs utility
+13. Using instructions from http://james.ahlstrom.name/quisk/docs.html#Installation
+	Installed Quisk using sudo -H python3 -m pip install --upgrade quisk
+	which required sidetrips to install:
+    	sudo apt-get install libasound2-dev
+		sudo apt-get install portaudio19-dev 
+		sudo apt-get install libpulse-dev 
+		sudo apt-get install gtk+-3.0
+14.	Installed WSJT-X by downloading wsjtx_2.3.1_armhf.deb from WSJT-X home page
+	Required some fixup  (to install missing dependencies):
+		wsjtx_2.3.1_armhf.deb
+		sudo apt-get --fix-broken install
+15.	Transferred current applications and sources to radiohead folder
+16.	Added to /boot/config.txt
+	# Radiohat 0.9
+	dtoverlay=i2c-rtc,ds3231,addr=0x68
+	dtoverlay=dwc2
+	dtparam=i2s=on
+	dtoverlay=genericstereoaudiocodec
+17. Added to /boot/cmdline.txt end of line
+	modules-load=dwc2,g_ether
+18.	Install from github RaspberryPi_I2S_Slave-master.zip
+	sudo cp genericstereoaudiocodec.dtbo /boot/overlays
+19.	Edited /lib/udev/hwclock-set
+	added t HWCLOCKPARS= --delay=0.7
+20.	Installed Audacity using apt-get
+21.	Installed pavucontrol using sudo apt-get install pavucontrol-qt
+22. Installed fldigi with sudo apt-get install fldigi
+23.	Installed pulse audio jack redirector with sudo apt-get install pulseaudio-module-jack
+24.	To launch shell scripts from the file manager you must now first execute this command
+	to deal with a bug Buster has installed: sudo cp /usr/bin/lxterminal /usr/bin/xterm
+25.	Reset screen resolution to 1600x1200 for better compatibility with iPad and with programs
+	that lose configuration dialog info with less height.
+26.	Changed password to the winter one.
+27.	Installed WSJT-X 2.4.0 from their home page and double clicking on the .deb file.
+28. Installed qsstv by "sudo apt-get install qsstv"
+
+
+
+
+	
+
+
