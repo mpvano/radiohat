@@ -48,19 +48,16 @@ bool gNeedsVFOUpdate = false;	//	 used in some polled mode apps
 
 
 /****************************************************************************
-*	si5351 definitions (currently using variant part due to shortages)
-*	note also that this project currently uses a 27Mhz crystal!
+*	si5351 definitions
 ****************************************************************************/
 #include "si5351.h"
 #undef SI5351_XTAL_FREQ
+#define SI5351_XTAL_FREQ 25000000
+#define cSI5351_I2C	0x60	//	default is for a 25Mhz crystal at 0x60h
 
-//	for some reason this doesn't work - it has to be done in the header file!
-//#undef SI5351_PLL_VCO_MIN
+//	This has to be done in the header file!
 //#define SI5351_PLL_VCO_MIN 380000000
 
-#define SI5351_XTAL_FREQ 25000000
-#define cSI5351_I2C	0x60	//	current boards use a variant part
-							//	default is for a 25Mhz crystal at 0x60h
 
 //	These define the operating limits of the VFO chip in this program
 #define F_MIN	10000UL		// Chip Lower frequency limit  10 KHz
@@ -70,24 +67,21 @@ bool gNeedsVFOUpdate = false;	//	 used in some polled mode apps
 //	as it's the USB FT8 carrier frequency on 40,20,15 and 10 meters
 //const int32_t INITIAL_FREQ = 7074000L;		// for 40m-10m FT8 USB
 #ifdef WWV
-const int32_t INITIAL_FREQ  = WWV * 1000000L;	//	useful during calibration with WWV
+const int32_t INITIAL_FREQ  = WWV * 1000000L;	//	useful during calibration
 #else
-const int32_t INITIAL_FREQ = 7074000L;		// for 40m-10m FT8 USB
+const int32_t INITIAL_FREQ = 7074000L;			// for 40m-10m FT8 USB
 #endif
 
+//	The current production 25mhz crystals specify 8 pf crystal load
+//	With this setting they  typically need around +20000 ppb correction here
+//	much lower values (+-2000) can be achieved by using 10pf instead
+//	if a file called CALFACTOR.txt is found in binary directory this value
+//	will be read from it instead of using this defiition
 #ifdef CALFACTOR
-long gCalibrationFactor = CALFACTOR; // from -D option in compilation
+long gCalibrationFactor = CALFACTOR; // use this with -D when calibrating
 #else
-//	frequency corrections for various cards. It needs to be stored a better way.
-//	for crystal frequency in si5351.h of 27000000 and 0 pf load (xtal spec is 2!)
-//long gCalibrationFactor = 124600;	// Xtal correction in parts per billion proto
-//long gCalibrationFactor = 78150;	// Xtal correction in parts per billion 0.8-1
-//long gCalibrationFactor = 74230;	// Xtal correction in parts per billion 0.9-1
-//long gCalibrationFactor = 60300;	// Xtal correction in parts per billion 0.9-2
-long gCalibrationFactor = 61300;	// Xtal correction in parts per billion 0.9-3
-//long gCalibrationFactor = 67000;	// Xtal correction in parts per billion 0.9-3
+long gCalibrationFactor = 21800;	// for s/n 00110 at 8 pf
 #endif
-
 
 //	use CLK2 on si5351 to drive the SGTL5000 master clock input
 const int32_t SGTL5000_FREQ = 12288000LL;	//	for 48Khz 32 bit duplex I2S, no PLL
@@ -96,6 +90,7 @@ Si5351 si5351(cSI5351_I2C);
 
 
 //	the VFO globals - these are all kept in DISPLAY units
+//	the dual VFO mode is NOT active yet in this program
 int gWhichVFO = 0;						// active vfo number 0-n				
 long gTuningStepSize = 1000;
 volatile uint32_t gVFOA = INITIAL_FREQ;
