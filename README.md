@@ -4,9 +4,9 @@ This is an early version of the folder full of files that need to be installed o
 
 When downloading and installing it, ensure that it is named "radiohat" and that it is in your home directory, or some of the shell scripts it contains will not work properly. When downloaded as a .zip archive, it may result in a folder with the branch suffix "-main" that needs to be removed if you want to use the enclosed shell scripts.
 
-Note also that some of the files in "docs" are very out of date or incomplete. RadioHat is still very much a work in progress.
-
 One way to create the folder on a pi is to "cd" to the directory you want it to appear in and then clone the repository using git with the command: "git clone https://github.com/mpvano/radiohat.git". This will allow you to use all the normal git functionality.
+
+Note also that some of the files in "docs" are very out of date or incomplete. RadioHat is still very much a work in progress.
 
 ### The RadioHat hardware
 
