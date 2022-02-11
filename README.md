@@ -32,6 +32,13 @@ Note that this board is very compact and built with QFPn and 0603 components. It
 ### Software
 The provided software is a collection of example and test programs that demonstrate operation of the board and allow testing and troubleshooting of it. They are only intended as a starting point for more serious software development.
 
+This repository is newly setup and s still being tested. There may be some issues with missing files, etc. They are being addressed as quickly as possible.
+
+### Dependencies
+These are in the course of being documented. In general they are confined to the normal Raspberry Pi build tools, with the exception of ncurses and its development tools.
+
+There's a log file of the updates to one clean Raspbian install that were needed in the "misc" folder that may be helpful in figuring out useful and missing dependencies.
+
 ### Mailing list
 
 There is a moderated mailing list for discussing this project at https://groups.io/g/RadioHat. This project's goal is develop radio equipment that requires a valid radio amateur operator's license to operate. Please include your valid station call sign in requests to join the list, and the nature of your interest in the project.
