@@ -1,8 +1,8 @@
 #!/bin/bash
 # Helps automate startup of WSJT-X on radiohat prototype
-cd ~/radiohead
+cd ~/radiohat
 #	make sure SGTL5000 sound card is initialized
-~/radiohead/pitrans1/pitrans -i
+~/radiohat/pitrans1/pitrans -i
 
 #	add redirectors for using jack from WSJTX
 #	This module may not be preinstalled you may need to
@@ -23,14 +23,14 @@ wsjtx &
 
 
 # switch gnu radio audio configuration to use jackd
-cp ~/radiohead/jackscripts/config.conf.jack ~/.gnuradio/config.conf
+cp ~/radiohat/jackscripts/config.conf.jack ~/.gnuradio/config.conf
 
 #	load the GnuRadio DSP module in FOREGROUND
 #	This script will wait here for it to end
-~/radiohead/WSJTX1.py
+~/radiohat/WSJTX1.py
 
 # switch gnu radio audio configuration back to use alsa
-cp ~/radiohead/jackscripts/config.conf.alsa ~/.gnuradio/config.conf
+cp ~/radiohat/jackscripts/config.conf.alsa ~/.gnuradio/config.conf
 pacmd unload-module module-jack-source
 pacmd unload-module module-jack-sink
 

@@ -1,3 +1,3 @@
 #!/bin/bash
 #wsjtx &
-#~/radiohead/WSJTX.py
+#~/radiohat/WSJTX.py
