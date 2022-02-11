@@ -34,7 +34,7 @@ The provided software is a collection of example and test programs that demonstr
 
 ### Mailing list
 
-There is a moderated mailing list for discussing this project at https://groups.io/g/RadioHat. This project's goal is develop radio equipment that requires a valid radio amateur operator's license to operate. Please include your valid station call sign in requests to join the list.
+There is a moderated mailing list for discussing this project at https://groups.io/g/RadioHat. This project's goal is develop radio equipment that requires a valid radio amateur operator's license to operate. Please include your valid station call sign in requests to join the list, and the nature of your interest in the project.
 
 Mario Vano
 AE0GL
