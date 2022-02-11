@@ -12,12 +12,12 @@ Radiohat is an open source peripheral board for the Raspberry Pi in the form of 
 
 It contains the following devices:<ol>
 	<li>A Freescale SGLT500024 bit full duplex 48Khz I2S Audio codec with headset interface</li>
-	<li>An Si5351 I2C controlled clock oscillator configured to provide quadrature clocks</li>
 	<li>A Quadrature Switched Demodulator preceded by a 3-32Mhz Band Pass Filter</li>
 	<li>A Quadrature Switched Modulator followed by a 32Mhz Low Pass Filter</li>
+	<li>An Si5351 I2C controlled clock oscillator configured to provide quadrature clocks for them</li>
 	<li>An optional DS3231 Real Time Clock/Calendar device</li>
 	<li>The EEPROM required by the Pi Foundation for "hat" devices</li>
-	<li>On board analog regulators to provide clean power from an external source</li>
+	<li>On board analog regulators to provide cleaner power from an optional external source</li>
 </ol>
 
 These devices are wired together in the usual way needed for HF radio operation with DSP provided by the Raspberry Pi. For typical operation as a radio transceiver you still need to provide a power amplifier with input and output filters and a transmit receive switching mechanism.
