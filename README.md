@@ -1,3 +1,4 @@
+![3dView](FAB/radiohead3d.jpg?raw=true "Title")
 # radiohat
 
 This is an early version of the folder full of files that need to be installed on a raspberry pi to allow experimentation with the RadioHat version 1.0 hardware.
@@ -8,7 +9,6 @@ One way to create the folder on a pi is to "cd" to the directory you want it to 
 
 Note also that some of the files in "docs" are very out of date or incomplete. RadioHat is still very much a work in progress.
 
-![3dView](FAB/radiohead3d.jpg?raw=true "Title")
 ### The RadioHat hardware
 
 Radiohat is an open source peripheral board for the Raspberry Pi in the form of a Pi "hat". It is intended to be a module containing many of the devices that are commonly needed to implement 3-30Mhz radio transmitters and receivers. It may also be used with other micro-controllers that support I2S if they are sufficiently powerful to handle the needed DSP operations.
