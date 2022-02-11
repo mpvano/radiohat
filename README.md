@@ -11,7 +11,7 @@ Note also that some of the files in "docs" are very out of date or incomplete. R
 Radiohat is an open source peripheral board for the Raspberry Pi in the form of a Pi "hat". It is intended to be a module containing many of the devices that are commonly needed to implement 3-30Mhz radio transmitters and receivers. It may also be used with other micro-controllers that support I2S if they are sufficiently powerful to handle the needed DSP operations.
 
 It contains the following devices:<ol>
-	<li>A Freescale SGLT500024 bit full duplex 48Khz I2S Audio codec with headset interface</li>
+	<li>A Freescale SGLT5000 24 bit full duplex 48Khz I2S Audio codec with headset interface</li>
 	<li>A Quadrature Switched Demodulator preceded by a 3-32Mhz Band Pass Filter</li>
 	<li>A Quadrature Switched Modulator followed by a 32Mhz Low Pass Filter</li>
 	<li>An Si5351 I2C controlled clock oscillator configured to provide quadrature clocks for them</li>
