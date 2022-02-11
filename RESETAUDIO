@@ -1,13 +1,13 @@
 #!/bin/bash
 # Helps automate startup of WSJT-X on radiohat prototype
-cd ~/radiohead
+cd ~/radiohat
 
 #	make sure SGTL5000 sound card is initialized
-~/radiohead/pitrans1/pitrans -i
+~/radiohat/pitrans1/pitrans -i
 killall jackd
 
 # switch gnu radio audio configuration back to use alsa
-cp ~/radiohead/jackscripts/config.conf.alsa ~/.gnuradio/config.conf
+cp ~/radiohat/jackscripts/config.conf.alsa ~/.gnuradio/config.conf
 pacmd unload-module module-jack-source
 pacmd unload-module module-jack-sink
 
