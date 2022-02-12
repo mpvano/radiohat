@@ -7,7 +7,7 @@ When downloading and installing it, ensure that it is named "radiohat" and that 
 
 One way to create the folder on a pi is to "cd" to the directory you want it to appear in and then clone the repository using git with the command: "git clone https://github.com/mpvano/radiohat.git". This will allow you to use all the normal git functionality.
 
-Note also that some of the files in "docs" are very out of date or incomplete. RadioHat is still very much a work in progress.
+Note also that some of the files in "docs" are very out of date or incomplete. The "Getting Started Guides" refer to a much earlier configuration with different directories on the pi and procedures to set things up. They're presented here only to give some idea what to do. I'll be replacing them with more modern versions as I get to them. RadioHat is still very much a work in progress.
 
 ### The RadioHat hardware
 
