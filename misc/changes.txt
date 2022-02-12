@@ -2,8 +2,8 @@ Raspberry Pi 3b+ on Touch screen display
 
 1.	Installed Buster 29-April-2021
 2.	Changed resolution to 1280x720 for touchscreen
-3.	Changed password to the irish one
-4.	Installed VNC with brian's song pwd
+3.	Changed password
+4.	Installed VNC
 5.	reconfigured notepad
 6.	Installed resource monitor and temperature monitor to task bar
 7.	sudo apt-get install "libncurses-dev"
@@ -45,7 +45,7 @@ Raspberry Pi 3b+ on Touch screen display
 	to deal with a bug Buster has installed: sudo cp /usr/bin/lxterminal /usr/bin/xterm
 25.	Reset screen resolution to 1600x1200 for better compatibility with iPad and with programs
 	that lose configuration dialog info with less height.
-26.	Changed password to the winter one.
+26.	Changed password
 27.	Installed WSJT-X 2.4.0 from their home page and double clicking on the .deb file.
 28. Installed qsstv by "sudo apt-get install qsstv"
 
