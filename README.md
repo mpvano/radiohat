@@ -23,7 +23,7 @@ It contains the following devices:<ol>
 	<li>On board analog regulators to provide cleaner power from an optional external source</li>
 </ol>
 
-These devices are wired together in the usual way needed for HF radio operation with DSP provided by the Raspberry Pi. For typical operation as a radio transceiver you still need to provide a power amplifier with input and output filters and a transmit receive switching mechanism.
+These devices are wired together in the usual way needed for HF radio operation with DSP provided by the Raspberry Pi. For typical operation as a radio transceiver you still need to provide a power amplifier with input and output filters and a transmit/receive switching mechanism.
 
 ### Fabrication of boards
 Although a small production run was completed to provide a few boards for use by software developers, there is currently no way to obtain boards other than fabricating them yourself.
