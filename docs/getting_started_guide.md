@@ -67,7 +67,7 @@ Fortunately, if you open the corresponding *.grc* file for each *.py* file using
 
 Make sure you are in your home directory (usually */home/pi*) and install the *radiohat* support tools folder there using one of the two procedures shown below. (Using git to clone the repository is the easiest and best way to do this).
 
-If you've done everything properly, you should now have a folder named "radiohat" in your *pi* home directory containing the contents of the *radiohat* github repository. If it has any other name you may need to rename it correctly before proceeding.
+Once you've done everything properly, you should have a folder named *radiohat* in your *pi* home directory containing the contents of the *radiohat* github repository. If it has any other name you may need to rename it before proceeding.
 
 *	**install using *git*:**
 
@@ -140,7 +140,7 @@ You must recompile *pitrans* at least once to ensure that it uses the correct li
 		cd ~/radiohat/pitrans1
 		c++ pitrans.cpp si5351.cpp -lncurses -L/usr/local/lib -lwiringPiDev
 
-* You can optionally add *-D WWV=n* where *n* is *5*, *10* or *15* to the end of the compilation command to more quickly check calibration by causing startup to  occur tuned to WWV.
+* You can optionally add *-D WWV=n* where *n* is *5*, *10* or *15* to the compilation command to more quickly check calibration by causing startup to  occur tuned to WWV.
 
 * Once you're happy with the results, you can copy the resulting *a.out* to *pitrans*, *pitrans1* and/or *pitrans2* or these can be alternate versions:
 
