@@ -122,7 +122,6 @@ Running *pitrans* needs to be done at least once after each reboot to initialize
 		# *RadioHat* 1.0
 		#for the optional rtc
 		#dtoverlay=i2c-rtc,ds3231,addr=0x68
-		dtoverlay=dwc2
 		dtparam=i2c=on
 		dtparam=i2s=on
 		dtoverlay=genericstereoaudiocodec
