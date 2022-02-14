@@ -3,7 +3,7 @@
 
 This document describes one way to perform a simple installation of the *RadioHat* board onto a Raspberry Pi4, and add and operate the software needed to test it.
 
-This is not meant to be a cookbook. The instructions assume you are familiar with downloading files, expanding them, and using the Raspberry Pi's command line interface. Be very careful with all connections to and from the Pi, as common causes of damage to Pi's is misconnection of wiring or application of incorrect voltages.
+This is not meant to be a cookbook. The instructions assume you are familiar with downloading files, expanding them, and using the Raspberry Pi's command line interface. Be very careful with all connections to and from the Pi, as common causes of damage to Pi's include misconnection of wiring or application of incorrect voltages.
 
 The procedures described here and this hardware are experimental and in the event of failures or errors may present some risk to the Pi - it's obviously not a good idea to use a "mission critical" board for this kind of work.
 
@@ -15,16 +15,16 @@ We are going to power the *RadioHat* from the Pi's on-board 5V supply. This is a
 
 * 	**Download and install** a copy of the latest 32 bit default release of Raspbian (*bullseye* at this time) into a 16Gb or 32Gb µSDHC card using the official *Raspberry Pi Imager* from [the RaspberryPi official web site](www.raspberrypi.com).
 
-*	**Install the µSD card** into the Pi's *GPIO* slot, Boot up, test the installation and do basic configuration including setting display preferences, hostname, networking and a new password. Make sure it is working properly before going on.
+*	**Install the µSD card** into the Pi's SDHC slot, Boot up, test the installation and do basic configuration including setting display preferences, hostname, networking and a new password. Make sure it is working properly before going on.
 
 
 ### Install the *RadioHat* hardware
 
 *	**Shut down** the operating system and Pi and unplug all cables.
 
-*	**Jumper settings:** Install a bi-pin jumpers between pins 9 and 10 - the two pins closest to the GPIO connector edge of the board. If your board came with a jumper connected between pins 1 and 2 to protect the power pins, you can leave it installed. There should be no other jumpers installed on the board.
+*	**Jumper settings:** Install a bi-pin jumpers between pins 9 and 10 of J5 - the two pins closest to the GPIO connector edge of the board. If your board came with a jumper connected between pins 1 and 2 to protect the power pins, you can leave it installed. There should be no other jumpers installed on the board.
 
-*	**Carefully plug the board** into the GPIO connector, ensuring that you've got all the pins plugged in properly and that the board is not resting on anything that would cause a short circuit. Some cases with oversize heatsinks require the use of an "extension" pass-through connector to raise the board up off the heatsing. 
+*	**Carefully plug the board** into the GPIO connector, ensuring that you've got all the pins plugged in properly and that the board is not resting on anything that would cause a short circuit. Some cases with oversize heatsinks require the use of an "extension" pass-through connector to raise the board safely off the heatsink. 
 
 *	**Reconnect** your display, keyboard, mouse and any network cabling then carefully power up the board and see if it boots up normally. If you see any problem at all or if the lights on the end of the Pi away from the USB connectors don't begin blinking right away, power down immediately and resolve the problem before proceeding.
 
@@ -67,11 +67,11 @@ Fortunately, if you open the corresponding *.grc* file for each *.py* file using
 
 Make sure you are in your home directory (usually */home/pi*) and install the *RadioHat* support tools folder there using one of the two procedures shown below. (Using git to clone the repository is the easiest and best way to do this).
 
-If you've done everything properly, you should then have a folder named "*RadioHat*" in your "pi" home directory containing the contents of the *RadioHat* github repository. If it has any other name you may need to rename it correctly before proceeding.
+If you've done everything properly, you should now have a folder named "radiohat" in your *pi* home directory containing the contents of the *RadioHat* github repository. If it has any other name you may need to rename it correctly before proceeding.
 
 *	**install using *git*:**
 
-		git clone https://github.com/mpvano/*RadioHat*.git
+		git clone https://github.com/mpvano/radiohat.git
 
 *	**...or install by downloading a *.zip* file:**
 
@@ -83,14 +83,14 @@ If you've done everything properly, you should then have a folder named "*RadioH
 
 	3. You should now see a folder called *radioHat-main* in your Downloads folder. Rename it to eliminate the suffix by using the command
 	
-			mv radioHat-main radioHat
+			mv radiohat-main radiohat
 	
 	4. Confirm that this worked by using the *ls* command.
 
 	5. Change back to your home directory and move the folder there using the commands:
 	
 			cd
-			mv Downloads/radiohat
+			mv Downloads/radiohat .
 
 
 ### Install the Audio Codec Driver Overlay
@@ -99,11 +99,11 @@ The *RadioHat*'s audio codec uses drivers that are already present in Raspbian. 
 
 After booting, the Audio Codec device  will appear in programs but it won't function properly until the devices on the *RadioHat* are initialized. For now, we're just going to manually initialize them by running the *pitrans* program.
 
-Running *pitrans* needs to be done at least once after each reboot to initialize the codec chip so that it can be used as a sound interface. This can easily be automated, but for now, we're just going to do it manually since pitrans will to be run alongside other program we use to test *RadioHat*.
+Running *pitrans* needs to be done at least once after each reboot to initialize the codec chip so that it can be used as a sound interface. This can easily be automated, but for now, we're just going to do it manually since pitrans will be run alongside any other program we use to test *RadioHat*.
 
 * **Install the overlay** by giving the following commands:
 
-		cd ~/*RadioHat*/RPI as\ SLAVE/ IIS\ setup/
+		cd ~/radiohat/RPI as\ SLAVE/ IIS\ setup/
 		cd RaspberryPi_I2S_Slave-master/genericstereoaudiocodec.dtbo"
 		sudo cp genericstereoaudiocodec.dtbo  /boot/overlays/genericstereoaudiocodec.dtbo
 
@@ -169,7 +169,7 @@ to read:
 
 ### Testing
 
-1. Connect a cellphone headset or a pair of headphones to the 3.5mm jack on the *RadioHat*.
+1. Connect a cellphone headset or a pair of headphones to the 3.5mm jack on *RadioHat*.
 1. connect an antenna (or signal generator) to the RF IN connector
 
 2. Power up the pi and recheck for proper operation. You can check the voltages and voltage regulator chip outputs on *RadioHat* for 1.8 and 3.3V. The 5V regulator will be inactive in this mode, but at least 4.5V should be present on power header's pin 9 (this is dropped about .4V by the series schottky diode on *RadioHat*.
@@ -177,17 +177,19 @@ to read:
 3. You now should be able to run the following commands from two separate shells (to keep both displays open):
 
 		~/radiohat/pitrans1/pitrans
-		~/radiohat/headset.py
+		
+	then:
 
-	(or open and run *headset.grc* from *gnuradio companion*)
+		~/radiohat/headset.py
+		(or open and run *headset.grc* from *gnuradio companion*)
 
 	If all goes well, you will see a QT window that contains some simple controls and instrumentation graphs in a tabbed display and you may even hear signals at the frequency shown in the pitrans window.
 	
 	If you instead see audio errors in the parent shell window, you will need to troubleshoot the audio configuration. the *Audacity* editor should be of some use in doing this, since the RadioHead devices should work fine with it. The board defaults to feeding audio from the QSD to the input device in the *Audacity* audio editing program if you have it installed and accepting output from Audacity to send to the headset earpieces.
 	
-4.	Once everything is working, you should be able to **tune around** a bit using cursor keys to change the frequency control section of the pitrans window andn keyboard commands to control its other features. In general upper case letters increment values and lower case ones decrement them. Donʼt modify any pitrans audio controls for now.
+4.	Once everything is working, you should be able to **tune around** a bit using cursor keys to change the frequency control section of the pitrans window and keyboard commands to control its other features. In general, upper case letters increment values and lower case ones decrement them. Donʼt modify any pitrans audio controls for now.
 
-5. If you have a load connected, you can experiment with **transmitting** using the *t* and *r* commands in *pitrans*. If you have a headset connected, its microphone and the microphone gain in pitrans work during transmit - otherwise the tone oscillator tab can be used to generate output.
+5. If you have a load connected, you can experiment with **transmitting** using the *t* and *r* commands in *pitrans*. If you have a headset connected, its microphone and the microphone gain in *pitrans* work during transmit - otherwise the tone oscillator tab can be used to generate output.
 
 6. connect the Pi to the internet
 
