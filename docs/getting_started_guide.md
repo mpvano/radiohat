@@ -63,11 +63,11 @@ Fortunately, if you open the corresponding *.grc* file for each *.py* file using
 			cd wiringPi
 			./build
 
-### Download and install the *RadioHat* folder
+### Download and install the *radiohat* folder
 
-Make sure you are in your home directory (usually */home/pi*) and install the *RadioHat* support tools folder there using one of the two procedures shown below. (Using git to clone the repository is the easiest and best way to do this).
+Make sure you are in your home directory (usually */home/pi*) and install the *radiohat* support tools folder there using one of the two procedures shown below. (Using git to clone the repository is the easiest and best way to do this).
 
-If you've done everything properly, you should now have a folder named "radiohat" in your *pi* home directory containing the contents of the *RadioHat* github repository. If it has any other name you may need to rename it correctly before proceeding.
+If you've done everything properly, you should now have a folder named "radiohat" in your *pi* home directory containing the contents of the *radiohat* github repository. If it has any other name you may need to rename it correctly before proceeding.
 
 *	**install using *git*:**
 
@@ -81,7 +81,7 @@ If you've done everything properly, you should now have a folder named "radiohat
 	
 			unzip radiohat-main.zip
 
-	3. You should now see a folder called *radioHat-main* in your Downloads folder. Rename it to eliminate the suffix by using the command
+	3. You should now see a folder called *radiohat-main* in your Downloads folder. Rename it to eliminate the suffix by using the command
 	
 			mv radiohat-main radiohat
 	
