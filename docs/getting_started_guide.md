@@ -48,7 +48,8 @@ Fortunately, if you open the corresponding *.grc* file for each *.py* file using
 
 * **Install GnuRadio** from the Raspbian default repository using the command:
 
-		sudo install apt-get gnuradio
+		sudo apt-get install libx11-dev
+		sudo apt-get install gnuradio
 
 * **Install ncurses5** with the command:
 
