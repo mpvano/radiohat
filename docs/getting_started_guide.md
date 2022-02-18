@@ -139,7 +139,7 @@ You must recompile *pitrans* at least once to ensure that it uses the correct li
 * **Compile** *pitrans* with these commands:
 
 		cd ~/radiohat/pitrans1
-		c++ pitrans.cpp si5351pi.cpp -lncurses -L/usr/local/lib -lwiringPi
+		c++ pitrans.cpp si5351pi.cpp -lncurses -lwiringPiDev -lwiringPi
 
 * You can optionally add *-D WWV=n* where *n* is *5*, *10* or *15* to the compilation command to more quickly check calibration by causing startup to  occur tuned to WWV.
 
