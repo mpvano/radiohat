@@ -295,6 +295,7 @@ int initSGTLRegisters(void)
 		writeSGTL(CHIP_SHORT_CTRL,0x1106);	//	enable & set level for HP short detection
 		writeSGTL(CHIP_ANA_CTRL,0x0104);	// Mute Mic, Mute DAC->LO, line in->ADC, DAC->HP
 		writeSGTL(CHIP_DIG_POWER, 0x0073);
+		writeSGTL(CHIP_PAD_STRENGTH, 0X02AF);	// double default i2s current
 
 	// CLOCK CONFIGURATION
 		writeSGTL(CHIP_ANA_POWER,0x6AFB);	//	don't power up capless HP (bit 2)

@@ -81,9 +81,9 @@ bool isVFOLocked()
 int getEvenDivisor(uint32_t freq)
 {
 	if (freq < 6850000) return 126;
-	else if (freq < 9500000) return 89;
+	else if (freq < 9500000) return 88;
 	else if (freq < 13600000) return 64;
-	else if (freq < 17500000) return 45;
+	else if (freq < 17500000) return 44;
 	else if (freq < 25000000) return 34;
 	else if (freq < 36000000) return 24;
 	else if (freq < 45000000) return 18;

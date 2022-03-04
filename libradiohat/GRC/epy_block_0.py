@@ -22,11 +22,12 @@ class blk(gr.basic_block):  # other base classes are basic_block, decim_block, i
             in_sig = None,
             out_sig = None
         )
-        self.libradiohat = CDLL("/home/pi/dvl/libradiohat/libradiohat.so")
+        self.libradiohat = CDLL("/home/pi/radiohat/libradiohat/libradiohat.so")
         self.libradiohat.initVFO(21800,7074000,12288000)
+#        self.libradiohat.cachePLLDivisor(False);
         self.libradiohat.setVFO(707400)
         self.libradiohat.initCodec()
-        self.libradiohat.setADCVol(c_double(0.5))
+        self.libradiohat.setADCVol(c_double(1.0))
         self.libradiohat.initControl()
         self.message_port_register_in(pmt.intern('freq'))
         self.set_msg_handler(pmt.intern('freq'),self.handle_msg)
