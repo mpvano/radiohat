@@ -25,7 +25,7 @@ class Hardware(BaseHardware):
         pass
 
     def open(self):  # Quisk calls this once to open the Hardware
-        self.libradiohat = CDLL("/home/pi/dvl/libradiohat/libradiohat.so")
+        self.libradiohat = CDLL("/home/pi/radiohat/libradiohat/libradiohat.so")
         if self.libradiohat == 0:
             t = "Can't find LibRadiohat!!"
         else:
