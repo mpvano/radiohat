@@ -1,7 +1,14 @@
-## libradiohat - experimental version and tools ##
+# libradiohat - experimental version and tools #
 ### Added 1-March-2022 ###
 
-### introducing *libradiohat* ###
+## NEWS 6-march-2022 ##
+
+This directory has started to become a collecting point for a lot of new work. These files will eventually replace the legacy *RadioHat* installation completely. Many things in this folder are incompatible with older ways of doing things - in particular all programs now rely on the dynamic library and/or the new *transceiver* program".
+
+Note also that everything looking for the codec now looks for it under a different ALSA device name! It is now known as *RadioHatCodec*. Programs still looking for *GenericStereoAudioCodec* or contractions of that name will need to be modified.
+
+
+## introducing *libradiohat* ##
 
 This is a refactored set of libraries for accessing the *RadioHat 1.0* hardware. It has many clean-ups and improvements and may now be built as a dynamic library.
 
@@ -9,7 +16,7 @@ This is primarily intended for use with *Bullseye*. It will also work on *Buster
 
 This folder includes an improved and rewritten version of *pitrans*, called *transceiver* that uses the dynamic library for all *RadioHat* access.
 
-There's  a primitive *make* file included that builds the library and test program but does not install it. For now, progams that use it must access things by absolute locations, or you must move the dynamic library to somewhere on the load library path.
+There's  a primitive *make* file included that builds the library and test program targets but does not install the library. It has *install* and *remove* targets - which copy the library to */usr/lib/*, but they require using *sudo make install/remove* in a separate step.  For now, programs that use the library should still access it by absolute location to simplify development.
 
 You'll also need to ensure that you've installed *libgpiod-dev* and *libncurses5-dev* before building. A *make clean* is probably also a good idea the first time.
 
@@ -18,7 +25,6 @@ Two other experimental programs are included that expect to find the libradiohat
 Note that these programs probably will not work on *Buster* because the earlier version of Gnu Radio it supports is not file or program compatible with newer versions. The same is true of the *Quisk* it offers.
 
 The earlier GRC programs in .~/radiohat should still be functional using *transceiver* instead of *pitrans* as they have not been disturbed by the new *GRC*. As usual ALSA device names may need touching up.
-
 
 ### Other Tools ###
 
