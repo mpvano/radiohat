@@ -362,7 +362,7 @@ int enableTXAudio(bool txon, cAudioMode mode)
 		else
 			{
 			//	FOR TRANSMITTING: MIC_IN -> DAC,  ADC -> I2S_OUT
-			writeSGTL(CHIP_ANA_CTRL,0);	//	mute all but lineout from ADC/DAC
+			writeSGTL(CHIP_ANA_CTRL,0x0010);	//	mute all but lineout from ADC/DAC
 			writeSGTL(CHIP_ANA_ADC_CTRL,0x0077);// ADC (0-22.5db) to +10.5db for mic
 			}
 		}

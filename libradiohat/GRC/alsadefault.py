@@ -5,7 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #
 # GNU Radio Python Flow Graph
-# Title: Transceiver
+# Title: Alsadefault
 # GNU Radio version: 3.8.2.0
 
 from distutils.version import StrictVersion
@@ -27,7 +27,6 @@ import sip
 from gnuradio import analog
 from gnuradio import audio
 from gnuradio import blocks
-import pmt
 from gnuradio import filter
 from gnuradio import gr
 import sys
@@ -36,16 +35,15 @@ from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
 from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
-import epy_block_0
 
 from gnuradio import qtgui
 
-class transceiver(gr.top_block, Qt.QWidget):
+class alsadefault(gr.top_block, Qt.QWidget):
 
     def __init__(self):
-        gr.top_block.__init__(self, "Transceiver")
+        gr.top_block.__init__(self, "Alsadefault")
         Qt.QWidget.__init__(self)
-        self.setWindowTitle("Transceiver")
+        self.setWindowTitle("Alsadefault")
         qtgui.util.check_set_qss()
         try:
             self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
@@ -63,7 +61,7 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.top_grid_layout = Qt.QGridLayout()
         self.top_layout.addLayout(self.top_grid_layout)
 
-        self.settings = Qt.QSettings("GNU Radio", "transceiver")
+        self.settings = Qt.QSettings("GNU Radio", "alsadefault")
 
         try:
             if StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
@@ -79,20 +77,15 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.txbalance = txbalance = 0
         self.samp_rate = samp_rate = 48000
         self.rxbalance = rxbalance = 0
-        self.Volume = Volume = 10
-        self.VFO = VFO = 7074000
-        self.ToneLevel1 = ToneLevel1 = 0.25
-        self.ToneLevel = ToneLevel = 0.25
-        self.ToneFreq1 = ToneFreq1 = 1900
-        self.ToneFreq = ToneFreq = 700
-        self.TXTone1 = TXTone1 = 0
+        self.agcGain = agcGain = 1
+        self.Volume = Volume = 0.1
+        self.ToneLevel = ToneLevel = 0.5
+        self.ToneFreq = ToneFreq = 1000
         self.TXTone = TXTone = 0
-        self.PTT = PTT = 0
         self.MuteMic = MuteMic = 1
         self.LSB = LSB = 1
         self.LPF = LPF = 50
         self.HPF = HPF = 2750
-        self.Gain = Gain = 2.5
 
         ##################################################
         # Blocks
@@ -111,10 +104,10 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.top_grid_layout.addWidget(self.RXTXTabs)
         self._txbalance_range = Range(-1, 1, .001, 0, 0)
         self._txbalance_win = RangeWidget(self._txbalance_range, self.set_txbalance, 'balance', "counter", float)
-        self.RXTXTabs_grid_layout_1.addWidget(self._txbalance_win, 0, 1, 1, 1)
-        for r in range(0, 1):
+        self.RXTXTabs_grid_layout_1.addWidget(self._txbalance_win, 1, 2, 1, 1)
+        for r in range(1, 2):
             self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
-        for c in range(1, 2):
+        for c in range(2, 3):
             self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
         self._rxbalance_range = Range(-1, 1, .001, 0, 1)
         self._rxbalance_win = RangeWidget(self._rxbalance_range, self.set_rxbalance, 'balance', "counter", float)
@@ -123,91 +116,55 @@ class transceiver(gr.top_block, Qt.QWidget):
             self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
         for c in range(2, 3):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
-        self._Volume_range = Range(0.01, 30, .1, 10, 0)
-        self._Volume_win = RangeWidget(self._Volume_range, self.set_Volume, 'Volume', "dial", float)
-        self.RXTXTabs_grid_layout_0.addWidget(self._Volume_win, 0, 1, 1, 1)
+        self._agcGain_range = Range(0.03, 5, .01, 1, 5)
+        self._agcGain_win = RangeWidget(self._agcGain_range, self.set_agcGain, 'Volume', "dial", float)
+        self.RXTXTabs_grid_layout_0.addWidget(self._agcGain_win, 0, 1, 1, 1)
         for r in range(0, 1):
             self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
         for c in range(1, 2):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
-        self._VFO_range = Range(3500, 32000000, 100, 7074000, 400)
-        self._VFO_win = RangeWidget(self._VFO_range, self.set_VFO, 'VFO', "counter", int)
-        self.RXTXTabs_grid_layout_0.addWidget(self._VFO_win, 3, 0, 1, 1)
-        for r in range(3, 4):
+        self._Volume_range = Range(0, 0.5, .01, 0.1, 0)
+        self._Volume_win = RangeWidget(self._Volume_range, self.set_Volume, 'Gain', "dial", float)
+        self.RXTXTabs_grid_layout_0.addWidget(self._Volume_win, 0, 0, 1, 1)
+        for r in range(0, 1):
             self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
         for c in range(0, 1):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
-        self._ToneLevel1_range = Range(0, 1, .01, 0.25, 0)
-        self._ToneLevel1_win = RangeWidget(self._ToneLevel1_range, self.set_ToneLevel1, 'Level 1', "counter", float)
-        self.RXTXTabs_grid_layout_1.addWidget(self._ToneLevel1_win, 2, 1, 1, 1)
-        for r in range(2, 3):
-            self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
-        for c in range(1, 2):
-            self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
-        self._ToneLevel_range = Range(0, 1, .01, 0.25, 0)
-        self._ToneLevel_win = RangeWidget(self._ToneLevel_range, self.set_ToneLevel, 'Level 0', "counter", float)
-        self.RXTXTabs_grid_layout_1.addWidget(self._ToneLevel_win, 1, 1, 1, 1)
-        for r in range(1, 2):
-            self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
-        for c in range(1, 2):
-            self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
-        self._ToneFreq1_range = Range(10, 10000, 10, 1900, 0)
-        self._ToneFreq1_win = RangeWidget(self._ToneFreq1_range, self.set_ToneFreq1, 'Freq 1', "counter", float)
-        self.RXTXTabs_grid_layout_1.addWidget(self._ToneFreq1_win, 2, 0, 1, 1)
-        for r in range(2, 3):
-            self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
-        self._ToneFreq_range = Range(10, 10000, 10, 700, 0)
-        self._ToneFreq_win = RangeWidget(self._ToneFreq_range, self.set_ToneFreq, 'Freq 0', "counter", float)
-        self.RXTXTabs_grid_layout_1.addWidget(self._ToneFreq_win, 1, 0, 1, 1)
+        self._ToneLevel_range = Range(0, 1, .01, 0.5, 0)
+        self._ToneLevel_win = RangeWidget(self._ToneLevel_range, self.set_ToneLevel, 'Level', "counter", float)
+        self.RXTXTabs_grid_layout_1.addWidget(self._ToneLevel_win, 1, 0, 1, 1)
         for r in range(1, 2):
             self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
         for c in range(0, 1):
             self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
-        _TXTone1_check_box = Qt.QCheckBox('Tone 1 to TX')
-        self._TXTone1_choices = {True: 1, False: 0}
-        self._TXTone1_choices_inv = dict((v,k) for k,v in self._TXTone1_choices.items())
-        self._TXTone1_callback = lambda i: Qt.QMetaObject.invokeMethod(_TXTone1_check_box, "setChecked", Qt.Q_ARG("bool", self._TXTone1_choices_inv[i]))
-        self._TXTone1_callback(self.TXTone1)
-        _TXTone1_check_box.stateChanged.connect(lambda i: self.set_TXTone1(self._TXTone1_choices[bool(i)]))
-        self.RXTXTabs_grid_layout_1.addWidget(_TXTone1_check_box, 2, 2, 1, 1)
-        for r in range(2, 3):
+        self._ToneFreq_range = Range(10, 10000, 10, 1000, 0)
+        self._ToneFreq_win = RangeWidget(self._ToneFreq_range, self.set_ToneFreq, 'Freq', "counter", float)
+        self.RXTXTabs_grid_layout_1.addWidget(self._ToneFreq_win, 1, 1, 1, 1)
+        for r in range(1, 2):
             self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
-        for c in range(2, 3):
+        for c in range(1, 2):
             self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
-        _TXTone_check_box = Qt.QCheckBox('Tone 0 to TX')
+        _TXTone_check_box = Qt.QCheckBox('Tone to TX')
         self._TXTone_choices = {True: 1, False: 0}
         self._TXTone_choices_inv = dict((v,k) for k,v in self._TXTone_choices.items())
         self._TXTone_callback = lambda i: Qt.QMetaObject.invokeMethod(_TXTone_check_box, "setChecked", Qt.Q_ARG("bool", self._TXTone_choices_inv[i]))
         self._TXTone_callback(self.TXTone)
         _TXTone_check_box.stateChanged.connect(lambda i: self.set_TXTone(self._TXTone_choices[bool(i)]))
-        self.RXTXTabs_grid_layout_1.addWidget(_TXTone_check_box, 1, 2, 1, 1)
-        for r in range(1, 2):
+        self.RXTXTabs_grid_layout_1.addWidget(_TXTone_check_box, 0, 2, 1, 1)
+        for r in range(0, 1):
             self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
         for c in range(2, 3):
             self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
-        _PTT_check_box = Qt.QCheckBox('PTT')
-        self._PTT_choices = {True: 1, False: 0}
-        self._PTT_choices_inv = dict((v,k) for k,v in self._PTT_choices.items())
-        self._PTT_callback = lambda i: Qt.QMetaObject.invokeMethod(_PTT_check_box, "setChecked", Qt.Q_ARG("bool", self._PTT_choices_inv[i]))
-        self._PTT_callback(self.PTT)
-        _PTT_check_box.stateChanged.connect(lambda i: self.set_PTT(self._PTT_choices[bool(i)]))
-        self.top_grid_layout.addWidget(_PTT_check_box, 3, 0, 1, 1)
-        for r in range(3, 4):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
-            self.top_grid_layout.setColumnStretch(c, 1)
         _MuteMic_check_box = Qt.QCheckBox('Mute Mic')
         self._MuteMic_choices = {True: 1, False: 0}
         self._MuteMic_choices_inv = dict((v,k) for k,v in self._MuteMic_choices.items())
         self._MuteMic_callback = lambda i: Qt.QMetaObject.invokeMethod(_MuteMic_check_box, "setChecked", Qt.Q_ARG("bool", self._MuteMic_choices_inv[i]))
         self._MuteMic_callback(self.MuteMic)
         _MuteMic_check_box.stateChanged.connect(lambda i: self.set_MuteMic(self._MuteMic_choices[bool(i)]))
-        self.RXTXTabs_grid_layout_1.addWidget(_MuteMic_check_box, 0, 2, 1, 1)
+        self.RXTXTabs_grid_layout_1.addWidget(_MuteMic_check_box, 0, 1, 1, 1)
         for r in range(0, 1):
             self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
-        for c in range(2, 3):
+        for c in range(1, 2):
             self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
         _LSB_check_box = Qt.QCheckBox('Reverse Sideband')
         self._LSB_choices = {True: -1, False: 1}
@@ -233,13 +190,6 @@ class transceiver(gr.top_block, Qt.QWidget):
         for r in range(1, 2):
             self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
         for c in range(1, 2):
-            self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
-        self._Gain_range = Range(0.03, 5, .05, 2.5, 5)
-        self._Gain_win = RangeWidget(self._Gain_range, self.set_Gain, 'Gain', "dial", float)
-        self.RXTXTabs_grid_layout_0.addWidget(self._Gain_win, 0, 0, 1, 1)
-        for r in range(0, 1):
-            self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
-        for c in range(0, 1):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
         self.qtgui_time_sink_x_0 = qtgui.time_sink_f(
             1024, #size
@@ -301,8 +251,8 @@ class transceiver(gr.top_block, Qt.QWidget):
             "", #name
             1
         )
-        self.qtgui_freq_sink_x_0.set_update_time(.1)
-        self.qtgui_freq_sink_x_0.set_y_axis(-120, 0)
+        self.qtgui_freq_sink_x_0.set_update_time(0.10)
+        self.qtgui_freq_sink_x_0.set_y_axis(-110, -20)
         self.qtgui_freq_sink_x_0.set_y_label('level', 'dBm')
         self.qtgui_freq_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, 0.0, 0, "")
         self.qtgui_freq_sink_x_0.enable_autoscale(False)
@@ -356,10 +306,9 @@ class transceiver(gr.top_block, Qt.QWidget):
                 100,
                 firdes.WIN_KAISER,
                 6.76))
-        self.hilbert_fc_1_0 = filter.hilbert_fc(201, firdes.WIN_BLACKMAN_hARRIS, 6.76)
-        self.hilbert_fc_1 = filter.hilbert_fc(201, firdes.WIN_BLACKMAN_hARRIS, 6.76)
-        self.hilbert_fc_0 = filter.hilbert_fc(201, firdes.WIN_BLACKMAN_hARRIS, 6.76)
-        self.epy_block_0 = epy_block_0.blk()
+        self.hilbert_fc_1_0 = filter.hilbert_fc(301, firdes.WIN_HAMMING, 6.76)
+        self.hilbert_fc_1 = filter.hilbert_fc(201, firdes.WIN_HAMMING, 6.76)
+        self.hilbert_fc_0 = filter.hilbert_fc(201, firdes.WIN_HAMMING, 6.76)
         self.blocks_mute_xx_1 = blocks.mute_ff(bool(MuteMic))
         self.blocks_multiply_const_vxx_1 = blocks.multiply_const_ff(1+rxbalance/2)
         self.blocks_multiply_const_vxx_0_0_1 = blocks.multiply_const_ff(LSB)
@@ -367,8 +316,6 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.blocks_multiply_const_vxx_0_0_0 = blocks.multiply_const_ff(1)
         self.blocks_multiply_const_vxx_0_0 = blocks.multiply_const_ff(LSB)
         self.blocks_multiply_const_vxx_0 = blocks.multiply_const_ff(1- rxbalance/2)
-        self.blocks_message_strobe_0_0 = blocks.message_strobe(pmt.from_long(PTT), 200)
-        self.blocks_message_strobe_0 = blocks.message_strobe(pmt.from_long(VFO), 250)
         self.blocks_float_to_complex_0 = blocks.float_to_complex(1)
         self.blocks_complex_to_real_1 = blocks.complex_to_real(1)
         self.blocks_complex_to_real_0 = blocks.complex_to_real(1)
@@ -389,35 +336,31 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.band_pass_filter_0 = filter.fir_filter_fff(
             1,
             firdes.band_pass(
-                Gain,
+                Volume,
                 samp_rate,
                 LPF,
                 HPF,
                 100,
-                firdes.WIN_BLACKMAN,
+                firdes.WIN_HAMMING,
                 6.76))
         self.audio_source_1 = audio.source(samp_rate, '', True)
-        self.audio_source_0 = audio.source(samp_rate, 'hw:RadioHatCodec,1', False)
-        self.audio_sink_1 = audio.sink(48000, '', False)
-        self.audio_sink_0 = audio.sink(samp_rate, 'hw:RadioHatCodec,0', False)
-        self.analog_sig_source_x_0_0 = analog.sig_source_f(samp_rate, analog.GR_COS_WAVE, ToneFreq1, ToneLevel1 * TXTone1, 0, 0)
+        self.audio_source_0 = audio.source(samp_rate, 'plughw:CARD=RadioHatCodec,DEV=1', True)
+        self.audio_sink_1 = audio.sink(samp_rate, '', True)
+        self.audio_sink_0 = audio.sink(samp_rate, 'plughw:CARD=RadioHatCodec,DEV=0', True)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_COS_WAVE, ToneFreq, ToneLevel * TXTone, 0, 0)
         self.analog_agc2_xx_1 = analog.agc2_ff(1e-1, 1e0, .8, 0.8)
         self.analog_agc2_xx_1.set_max_gain(8)
         self.analog_agc2_xx_0 = analog.agc2_ff(1e-3, 1e-2, 1.7, 1.0)
-        self.analog_agc2_xx_0.set_max_gain(Volume)
+        self.analog_agc2_xx_0.set_max_gain(agcGain)
 
 
 
         ##################################################
         # Connections
         ##################################################
-        self.msg_connect((self.blocks_message_strobe_0, 'strobe'), (self.epy_block_0, 'freq'))
-        self.msg_connect((self.blocks_message_strobe_0_0, 'strobe'), (self.epy_block_0, 'ptt'))
         self.connect((self.analog_agc2_xx_0, 0), (self.audio_sink_1, 0))
         self.connect((self.analog_agc2_xx_1, 0), (self.blocks_mute_xx_1, 0))
         self.connect((self.analog_sig_source_x_0, 0), (self.blocks_add_xx_1, 1))
-        self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_add_xx_1, 2))
         self.connect((self.audio_source_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.audio_source_0, 1), (self.blocks_multiply_const_vxx_1, 0))
         self.connect((self.audio_source_1, 0), (self.analog_agc2_xx_1, 0))
@@ -449,7 +392,7 @@ class transceiver(gr.top_block, Qt.QWidget):
 
 
     def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "transceiver")
+        self.settings = Qt.QSettings("GNU Radio", "alsadefault")
         self.settings.setValue("geometry", self.saveGeometry())
         event.accept()
 
@@ -467,8 +410,7 @@ class transceiver(gr.top_block, Qt.QWidget):
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
         self.analog_sig_source_x_0.set_sampling_freq(self.samp_rate)
-        self.analog_sig_source_x_0_0.set_sampling_freq(self.samp_rate)
-        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Gain, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_BLACKMAN, 6.76))
+        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Volume, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_HAMMING, 6.76))
         self.band_pass_filter_1.set_taps(firdes.band_pass(1, self.samp_rate, 100, 3000, 100, firdes.WIN_BLACKMAN, 6.76))
         self.low_pass_filter_0.set_taps(firdes.low_pass(1- self.txbalance/2, self.samp_rate, 3000, 100, firdes.WIN_KAISER, 6.76))
         self.low_pass_filter_0_0.set_taps(firdes.low_pass(1+self.txbalance/2, self.samp_rate, 3000, 100, firdes.WIN_KAISER, 6.76))
@@ -483,26 +425,19 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.blocks_multiply_const_vxx_0.set_k(1- self.rxbalance/2)
         self.blocks_multiply_const_vxx_1.set_k(1+self.rxbalance/2)
 
+    def get_agcGain(self):
+        return self.agcGain
+
+    def set_agcGain(self, agcGain):
+        self.agcGain = agcGain
+        self.analog_agc2_xx_0.set_max_gain(self.agcGain)
+
     def get_Volume(self):
         return self.Volume
 
     def set_Volume(self, Volume):
         self.Volume = Volume
-        self.analog_agc2_xx_0.set_max_gain(self.Volume)
-
-    def get_VFO(self):
-        return self.VFO
-
-    def set_VFO(self, VFO):
-        self.VFO = VFO
-        self.blocks_message_strobe_0.set_msg(pmt.from_long(self.VFO))
-
-    def get_ToneLevel1(self):
-        return self.ToneLevel1
-
-    def set_ToneLevel1(self, ToneLevel1):
-        self.ToneLevel1 = ToneLevel1
-        self.analog_sig_source_x_0_0.set_amplitude(self.ToneLevel1 * self.TXTone1)
+        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Volume, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_HAMMING, 6.76))
 
     def get_ToneLevel(self):
         return self.ToneLevel
@@ -511,27 +446,12 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.ToneLevel = ToneLevel
         self.analog_sig_source_x_0.set_amplitude(self.ToneLevel * self.TXTone)
 
-    def get_ToneFreq1(self):
-        return self.ToneFreq1
-
-    def set_ToneFreq1(self, ToneFreq1):
-        self.ToneFreq1 = ToneFreq1
-        self.analog_sig_source_x_0_0.set_frequency(self.ToneFreq1)
-
     def get_ToneFreq(self):
         return self.ToneFreq
 
     def set_ToneFreq(self, ToneFreq):
         self.ToneFreq = ToneFreq
         self.analog_sig_source_x_0.set_frequency(self.ToneFreq)
-
-    def get_TXTone1(self):
-        return self.TXTone1
-
-    def set_TXTone1(self, TXTone1):
-        self.TXTone1 = TXTone1
-        self._TXTone1_callback(self.TXTone1)
-        self.analog_sig_source_x_0_0.set_amplitude(self.ToneLevel1 * self.TXTone1)
 
     def get_TXTone(self):
         return self.TXTone
@@ -540,14 +460,6 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.TXTone = TXTone
         self._TXTone_callback(self.TXTone)
         self.analog_sig_source_x_0.set_amplitude(self.ToneLevel * self.TXTone)
-
-    def get_PTT(self):
-        return self.PTT
-
-    def set_PTT(self, PTT):
-        self.PTT = PTT
-        self._PTT_callback(self.PTT)
-        self.blocks_message_strobe_0_0.set_msg(pmt.from_long(self.PTT))
 
     def get_MuteMic(self):
         return self.MuteMic
@@ -571,27 +483,20 @@ class transceiver(gr.top_block, Qt.QWidget):
 
     def set_LPF(self, LPF):
         self.LPF = LPF
-        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Gain, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_BLACKMAN, 6.76))
+        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Volume, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_HAMMING, 6.76))
 
     def get_HPF(self):
         return self.HPF
 
     def set_HPF(self, HPF):
         self.HPF = HPF
-        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Gain, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_BLACKMAN, 6.76))
-
-    def get_Gain(self):
-        return self.Gain
-
-    def set_Gain(self, Gain):
-        self.Gain = Gain
-        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Gain, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_BLACKMAN, 6.76))
+        self.band_pass_filter_0.set_taps(firdes.band_pass(self.Volume, self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_HAMMING, 6.76))
 
 
 
 
 
-def main(top_block_cls=transceiver, options=None):
+def main(top_block_cls=alsadefault, options=None):
 
     if StrictVersion("4.5.0") <= StrictVersion(Qt.qVersion()) < StrictVersion("5.0.0"):
         style = gr.prefs().get_string('qtgui', 'style', 'raster')

@@ -7,3 +7,9 @@ libradiohat.so:	codec.cpp control.cpp si5351pi.cpp vfo.cpp vswr.cpp *.h
 
 clean:
 	rm -f *.o *.so transceiver
+install:
+	cp libradiohat.so /usr/lib/libradiohat.so
+remove:
+	rm /usr/lib/libradiohat.so
+
+

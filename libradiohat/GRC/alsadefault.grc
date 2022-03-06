@@ -10,7 +10,7 @@ options:
     gen_linking: dynamic
     generate_options: qt_gui
     hier_block_src_path: '.:'
-    id: transceiver
+    id: alsadefault
     max_nouts: '0'
     output_language: python
     placement: (0,0)
@@ -32,27 +32,6 @@ options:
     state: enabled
 
 blocks:
-- name: Gain
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: RXTXTabs@0:0,0
-    label: Gain
-    min_len: '5'
-    orient: Qt.Vertical
-    rangeType: float
-    start: '0.03'
-    step: '.05'
-    stop: '5'
-    value: '2.5'
-    widget: dial
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [424, 4.0]
-    rotation: 0
-    state: enabled
 - name: HPF
   id: variable_qtgui_range
   parameters:
@@ -71,7 +50,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 4.0]
+    coordinate: [944, 4.0]
     rotation: 0
     state: enabled
 - name: LPF
@@ -92,7 +71,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [656, 4.0]
+    coordinate: [992, 20.0]
     rotation: 0
     state: enabled
 - name: LSB
@@ -109,7 +88,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [872, 12.0]
+    coordinate: [512, 332.0]
     rotation: 0
     state: enabled
 - name: MuteMic
@@ -117,7 +96,7 @@ blocks:
   parameters:
     comment: ''
     'false': '0'
-    gui_hint: RXTXTabs@1:0,2
+    gui_hint: RXTXTabs@1:0,1
     label: Mute Mic
     'true': '1'
     type: real
@@ -126,41 +105,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [600, 796.0]
-    rotation: 0
-    state: enabled
-- name: PTT
-  id: variable_qtgui_push_button
-  parameters:
-    comment: ''
-    gui_hint: RXTXTabs@0:3,2
-    label: PTT
-    pressed: '1'
-    released: '0'
-    type: int
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [408, 676.0]
-    rotation: 0
-    state: disabled
-- name: PTT
-  id: variable_qtgui_check_box
-  parameters:
-    comment: ''
-    'false': '0'
-    gui_hint: 3,0
-    label: PTT
-    'true': '1'
-    type: int
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [544, 676.0]
+    coordinate: [296, 4.0]
     rotation: 0
     state: enabled
 - name: TXTone
@@ -168,8 +113,8 @@ blocks:
   parameters:
     comment: ''
     'false': '0'
-    gui_hint: RXTXTabs@1:1,2
-    label: Tone 0 to TX
+    gui_hint: RXTXTabs@1:0,2
+    label: Tone to TX
     'true': '1'
     type: real
     value: '0'
@@ -177,150 +122,91 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [344, 796.0]
-    rotation: 0
-    state: enabled
-- name: TXTone1
-  id: variable_qtgui_check_box
-  parameters:
-    comment: ''
-    'false': '0'
-    gui_hint: RXTXTabs@1:2,2
-    label: Tone 1 to TX
-    'true': '1'
-    type: real
-    value: '0'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [464, 796.0]
+    coordinate: [328, 28.0]
     rotation: 0
     state: enabled
 - name: ToneFreq
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: RXTXTabs@1:1,0
-    label: Freq 0
+    gui_hint: RXTXTabs@1:1,1
+    label: Freq
     min_len: '0'
     orient: Qt.Vertical
     rangeType: float
     start: '10'
     step: '10'
     stop: '10000'
-    value: '700'
+    value: '1000'
     widget: counter
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [0, 724.0]
-    rotation: 0
-    state: enabled
-- name: ToneFreq1
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: RXTXTabs@1:2,0
-    label: Freq 1
-    min_len: '0'
-    orient: Qt.Vertical
-    rangeType: float
-    start: '10'
-    step: '10'
-    stop: '10000'
-    value: '1900'
-    widget: counter
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [0, 780.0]
+    coordinate: [456, 4.0]
     rotation: 0
     state: enabled
 - name: ToneLevel
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 'RXTXTabs@1: 1,1'
-    label: Level 0
+    gui_hint: 'RXTXTabs@1: 1,0'
+    label: Level
     min_len: '0'
     orient: Qt.Vertical
     rangeType: float
     start: '0'
     step: '.01'
     stop: '1'
-    value: '0.25'
+    value: '0.5'
     widget: counter
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [112, 724.0]
+    coordinate: [520, 20.0]
     rotation: 0
     state: enabled
-- name: ToneLevel1
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 'RXTXTabs@1: 2,1'
-    label: Level 1
-    min_len: '0'
-    orient: Qt.Vertical
-    rangeType: float
-    start: '0'
-    step: '.01'
-    stop: '1'
-    value: '0.25'
-    widget: counter
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [112, 780.0]
-    rotation: 0
-    state: enabled
-- name: VFO
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: RXTXTabs@0:3,0
-    label: VFO
-    min_len: '400'
-    orient: Qt.Horizontal
-    rangeType: int
-    start: '3500'
-    step: '100'
-    stop: '32000000'
-    value: '7074000'
-    widget: counter
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [664, 668.0]
-    rotation: 0
-    state: true
 - name: Volume
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: RXTXTabs@0:0,1
-    label: Volume
+    gui_hint: RXTXTabs@0:0,0
+    label: Gain
     min_len: '0'
     orient: Qt.Vertical
     rangeType: float
-    start: '0.01'
-    step: '.1'
-    stop: '30'
-    value: '10'
+    start: '0'
+    step: '.01'
+    stop: '0.5'
+    value: '0.1'
     widget: dial
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [304, 4.0]
+    coordinate: [752, 4.0]
+    rotation: 0
+    state: enabled
+- name: agcGain
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: RXTXTabs@0:0,1
+    label: Volume
+    min_len: '5'
+    orient: Qt.Vertical
+    rangeType: float
+    start: '0.03'
+    step: '.01'
+    stop: '5'
+    value: '1'
+    widget: dial
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [824, 20.0]
     rotation: 0
     state: enabled
 - name: rxbalance
@@ -341,7 +227,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [760, 4.0]
+    coordinate: [1104, 4.0]
     rotation: 0
     state: enabled
 - name: samp_rate
@@ -360,7 +246,7 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: RXTXTabs@1:0,1
+    gui_hint: RXTXTabs@1:1,2
     label: balance
     min_len: '0'
     orient: Qt.Vertical
@@ -374,7 +260,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [232, 780.0]
+    coordinate: [640, 4.0]
     rotation: 0
     state: enabled
 - name: RXTXTabs
@@ -420,7 +306,7 @@ blocks:
     comment: ''
     decay_rate: 1e-2
     gain: '1.0'
-    max_gain: Volume
+    max_gain: agcGain
     maxoutbuf: '0'
     minoutbuf: '0'
     reference: '1.7'
@@ -450,7 +336,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [176, 356.0]
+    coordinate: [168, 380.0]
     rotation: 0
     state: enabled
 - name: analog_sig_source_x_0
@@ -472,29 +358,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 460.0]
-    rotation: 0
-    state: enabled
-- name: analog_sig_source_x_0_0
-  id: analog_sig_source_x
-  parameters:
-    affinity: ''
-    alias: ''
-    amp: ToneLevel1 * TXTone1
-    comment: ''
-    freq: ToneFreq1
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    offset: '0'
-    phase: '0'
-    samp_rate: samp_rate
-    type: float
-    waveform: analog.GR_COS_WAVE
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [8, 588.0]
+    coordinate: [0, 532.0]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -503,9 +367,9 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: hw:RadioHatCodec,0
+    device_name: plughw:CARD=RadioHatCodec,DEV=0
     num_inputs: '2'
-    ok_to_block: 'False'
+    ok_to_block: 'True'
     samp_rate: samp_rate
   states:
     bus_sink: false
@@ -522,13 +386,13 @@ blocks:
     comment: ''
     device_name: ''
     num_inputs: '1'
-    ok_to_block: 'False'
-    samp_rate: '48000'
+    ok_to_block: 'True'
+    samp_rate: samp_rate
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1080, 268.0]
+    coordinate: [1096, 268.0]
     rotation: 0
     state: enabled
 - name: audio_source_0
@@ -537,17 +401,17 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: hw:RadioHatCodec,1
+    device_name: plughw:CARD=RadioHatCodec,DEV=1
     maxoutbuf: '0'
     minoutbuf: '0'
     num_outputs: '2'
-    ok_to_block: 'False'
+    ok_to_block: 'True'
     samp_rate: samp_rate
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [0, 144.0]
+    coordinate: [8, 144.0]
     rotation: 0
     state: enabled
 - name: audio_source_1
@@ -566,7 +430,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [8, 388.0]
+    coordinate: [0, 412.0]
     rotation: 0
     state: enabled
 - name: band_pass_filter_0
@@ -577,7 +441,7 @@ blocks:
     beta: '6.76'
     comment: ''
     decim: '1'
-    gain: Gain
+    gain: Volume
     high_cutoff_freq: HPF
     interp: '1'
     low_cutoff_freq: LPF
@@ -586,7 +450,7 @@ blocks:
     samp_rate: samp_rate
     type: fir_filter_fff
     width: '100'
-    win: firdes.WIN_BLACKMAN
+    win: firdes.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
@@ -645,14 +509,14 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    num_inputs: '3'
+    num_inputs: '2'
     type: float
     vlen: '1'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [224, 472.0]
+    coordinate: [224, 544.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_imag_0
@@ -732,41 +596,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [472, 136.0]
-    rotation: 0
-    state: enabled
-- name: blocks_message_strobe_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.from_long(VFO)
-    period: '250'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [856, 740.0]
-    rotation: 0
-    state: true
-- name: blocks_message_strobe_0_0
-  id: blocks_message_strobe
-  parameters:
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-    msg: pmt.from_long(PTT)
-    period: '200'
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [856, 676.0]
+    coordinate: [488, 144.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -784,7 +614,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 140.0]
+    coordinate: [248, 140.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_0_0
@@ -874,7 +704,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 172.0]
+    coordinate: [248, 172.0]
     rotation: 0
     state: true
 - name: blocks_mute_xx_1
@@ -891,50 +721,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [392, 392.0]
+    coordinate: [384, 416.0]
     rotation: 0
     state: enabled
-- name: epy_block_0
-  id: epy_block
-  parameters:
-    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
-      \ GRC will instantiate the first class it finds\nto get ports and parameters\
-      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
-      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
-      from gnuradio import gr\nimport pmt\n\nfrom ctypes import *\n\nclass blk(gr.basic_block):\
-      \  # other base classes are basic_block, decim_block, interp_block\n    \"\"\
-      \"Embedded Python Block example - a simple multiply const\"\"\"\n\n    def __init__(self):\n\
-      \        gr.sync_block.__init__(\n            self,\n            name='libradiohat',\
-      \   # will show up in GRC\n            in_sig = None,\n            out_sig =\
-      \ None\n        )\n        self.libradiohat = CDLL(\"/home/pi/radiohat/libradiohat/libradiohat.so\"\
-      )\n        self.libradiohat.initVFO(21800,7074000,12288000)\n#        self.libradiohat.cachePLLDivisor(False);\n\
-      \        self.libradiohat.setVFO(707400)\n        self.libradiohat.initCodec()\n\
-      \        self.libradiohat.setADCVol(c_double(1.0))\n        self.libradiohat.initControl()\n\
-      \        self.message_port_register_in(pmt.intern('freq'))\n        self.set_msg_handler(pmt.intern('freq'),self.handle_msg)\n\
-      \        self.message_port_register_in(pmt.intern('ptt'))\n        self.set_msg_handler(pmt.intern('ptt'),self.handle_msg1)\n\
-      \        self.ptt = 0\n        self.VFO = 7074000000\n \n    def handle_msg(self,msg):\n\
-      \        self.vfomsg = int(pmt.to_double(msg))\n        if (self.VFO != self.vfomsg):\n\
-      \            self.libradiohat.setVFO(self.vfomsg)\n            self.VFO = self.vfomsg\
-      \     \n \n    def handle_msg1(self,msg):\n        self.pttmsg = pmt.to_long(msg)\n\
-      \        if (self.pttmsg != self.ptt):\n            if (self.pttmsg == 0):\n\
-      \                self.libradiohat.enableTX(c_bool(0),c_int(0))\n           \
-      \ else :\n                self.libradiohat.enableTX(c_bool(1),c_int(0))\n  \
-      \          self.ptt = self.pttmsg\n            \n#    def work(self, input_items,\
-      \ output_items):\n#        return 0\n\n"
-    affinity: ''
-    alias: ''
-    comment: ''
-    maxoutbuf: '0'
-    minoutbuf: '0'
-  states:
-    _io_cache: ('libradiohat', 'blk', [], [('ptt', 'message', 1), ('freq', 'message',
-      1)], [], 'Embedded Python Block example - a simple multiply const', [])
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [1120, 696.0]
-    rotation: 0
-    state: true
 - name: hilbert_fc_0
   id: hilbert_fc
   parameters:
@@ -945,7 +734,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_taps: '201'
-    win: firdes.WIN_BLACKMAN_hARRIS
+    win: firdes.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
@@ -963,7 +752,7 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
     num_taps: '201'
-    win: firdes.WIN_BLACKMAN_hARRIS
+    win: firdes.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
@@ -980,8 +769,8 @@ blocks:
     comment: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    num_taps: '201'
-    win: firdes.WIN_BLACKMAN_hARRIS
+    num_taps: '301'
+    win: firdes.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
@@ -1096,7 +885,7 @@ blocks:
     tr_tag: '""'
     type: complex
     units: dBm
-    update_time: '.1'
+    update_time: '0.10'
     width1: '1'
     width10: '1'
     width2: '1'
@@ -1108,13 +897,13 @@ blocks:
     width8: '1'
     width9: '1'
     wintype: firdes.WIN_BLACKMAN_hARRIS
-    ymax: '0'
-    ymin: '-120'
+    ymax: '-20'
+    ymin: '-110'
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 152.0]
+    coordinate: [1056, 160.0]
     rotation: 0
     state: enabled
 - name: qtgui_time_sink_x_0
@@ -1148,7 +937,7 @@ blocks:
     ctrlpanel: 'False'
     entags: 'False'
     grid: 'True'
-    gui_hint: RXTXTabs@1:0,0
+    gui_hint: RXTXTabs@1:0,0,1,1
     label1: ''
     label10: ''
     label2: ''
@@ -1211,7 +1000,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1056, 364.0]
+    coordinate: [1056, 380.0]
     rotation: 0
     state: enabled
 
@@ -1219,7 +1008,6 @@ connections:
 - [analog_agc2_xx_0, '0', audio_sink_1, '0']
 - [analog_agc2_xx_1, '0', blocks_mute_xx_1, '0']
 - [analog_sig_source_x_0, '0', blocks_add_xx_1, '1']
-- [analog_sig_source_x_0_0, '0', blocks_add_xx_1, '2']
 - [audio_source_0, '0', blocks_multiply_const_vxx_0, '0']
 - [audio_source_0, '1', blocks_multiply_const_vxx_1, '0']
 - [audio_source_1, '0', analog_agc2_xx_1, '0']
@@ -1232,8 +1020,6 @@ connections:
 - [blocks_complex_to_real_0, '0', blocks_multiply_const_vxx_0_0, '0']
 - [blocks_complex_to_real_1, '0', blocks_multiply_const_vxx_0_0_0_0, '0']
 - [blocks_float_to_complex_0, '0', qtgui_freq_sink_x_0, '0']
-- [blocks_message_strobe_0, strobe, epy_block_0, freq]
-- [blocks_message_strobe_0_0, strobe, epy_block_0, ptt]
 - [blocks_multiply_const_vxx_0, '0', blocks_float_to_complex_0, '1']
 - [blocks_multiply_const_vxx_0, '0', hilbert_fc_1, '0']
 - [blocks_multiply_const_vxx_0_0, '0', blocks_add_xx_0, '0']
