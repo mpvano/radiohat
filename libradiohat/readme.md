@@ -3,7 +3,7 @@
 
 ## NEWS 6-march-2022 ##
 
-This directory has started to become a collecting point for a lot of new work. These files will eventually replace the legacy *RadioHat* installation completely. Many things in this folder are incompatible with older ways of doing things - in particular all programs now rely on the dynamic library and/or the new *transceiver* program".
+This directory has started to become a collecting point for a lot of new work. These files will eventually replace the legacy *RadioHat* installation completely. Many things in this folder are incompatible with older ways of doing things - in particular all programs now rely on the dynamic library and/or the new *transceiver* program.
 
 Note also that everything looking for the codec now looks for it under a different ALSA device name! It is now known as *RadioHatCodec*. Programs still looking for *GenericStereoAudioCodec* or contractions of that name will need to be modified.
 
