@@ -375,7 +375,7 @@ class transceiver(gr.top_block, Qt.QWidget):
             self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
         for c in range(0, 2):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
-        self.mic_preamp_0 = mic_preamp(
+        self.mic_preamp_1 = mic_preamp(
             ALSA=ALSA,
             MuteMic=MuteMic,
             PTT=PTT,
@@ -422,8 +422,8 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.connect((self.analog_sig_source_x_0_0, 0), (self.blocks_add_xx_1, 2))
         self.connect((self.audio_source_0, 0), (self.blocks_multiply_const_vxx_0, 0))
         self.connect((self.audio_source_0, 1), (self.blocks_multiply_const_vxx_1, 0))
-        self.connect((self.audio_source_0, 1), (self.mic_preamp_0, 0))
-        self.connect((self.audio_source_1, 0), (self.mic_preamp_0, 1))
+        self.connect((self.audio_source_0, 1), (self.mic_preamp_1, 0))
+        self.connect((self.audio_source_1, 0), (self.mic_preamp_1, 1))
         self.connect((self.band_pass_filter_0, 0), (self.analog_agc2_xx_0, 0))
         self.connect((self.blocks_add_xx_1, 0), (self.ssb_mod_0, 0))
         self.connect((self.blocks_add_xx_2, 0), (self.audio_sink_0, 0))
@@ -433,7 +433,7 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_const_vxx_0, 0), (self.ssb_demod_0, 0))
         self.connect((self.blocks_multiply_const_vxx_1, 0), (self.blocks_float_to_complex_0, 0))
         self.connect((self.blocks_multiply_const_vxx_1, 0), (self.ssb_demod_0, 1))
-        self.connect((self.mic_preamp_0, 0), (self.blocks_add_xx_1, 0))
+        self.connect((self.mic_preamp_1, 0), (self.blocks_add_xx_1, 0))
         self.connect((self.ssb_demod_0, 0), (self.band_pass_filter_0, 0))
         self.connect((self.ssb_mod_0, 0), (self.blocks_add_xx_2, 1))
         self.connect((self.ssb_mod_0, 1), (self.blocks_add_xx_3, 1))
@@ -539,7 +539,7 @@ class transceiver(gr.top_block, Qt.QWidget):
         self._PTT_callback(self.PTT)
         self.band_pass_filter_0.set_taps(firdes.band_pass(self.Gain * (1-self.PTT), self.samp_rate, self.LPF, self.HPF, 100, firdes.WIN_BLACKMAN, 6.76))
         self.blocks_message_strobe_0_0.set_msg(pmt.from_long(self.PTT))
-        self.mic_preamp_0.set_PTT(self.PTT)
+        self.mic_preamp_1.set_PTT(self.PTT)
         self.ssb_mod_0.set_PTT(self.PTT)
 
     def get_MuteMic(self):
@@ -548,7 +548,7 @@ class transceiver(gr.top_block, Qt.QWidget):
     def set_MuteMic(self, MuteMic):
         self.MuteMic = MuteMic
         self._MuteMic_callback(self.MuteMic)
-        self.mic_preamp_0.set_MuteMic(self.MuteMic)
+        self.mic_preamp_1.set_MuteMic(self.MuteMic)
 
     def get_LSB(self):
         return self.LSB
@@ -586,7 +586,7 @@ class transceiver(gr.top_block, Qt.QWidget):
     def set_ALSA(self, ALSA):
         self.ALSA = ALSA
         self._ALSA_callback(self.ALSA)
-        self.mic_preamp_0.set_ALSA(self.ALSA)
+        self.mic_preamp_1.set_ALSA(self.ALSA)
 
 
 

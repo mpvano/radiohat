@@ -771,7 +771,7 @@ blocks:
     coordinate: [1112, 672.0]
     rotation: 0
     state: true
-- name: mic_preamp_0
+- name: mic_preamp_1
   id: mic_preamp
   parameters:
     ALSA: ALSA
@@ -786,7 +786,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [264, 356.0]
+    coordinate: [304, 348.0]
     rotation: 0
     state: true
 - name: note_0
@@ -1053,8 +1053,8 @@ connections:
 - [analog_sig_source_x_0_0, '0', blocks_add_xx_1, '2']
 - [audio_source_0, '0', blocks_multiply_const_vxx_0, '0']
 - [audio_source_0, '1', blocks_multiply_const_vxx_1, '0']
-- [audio_source_0, '1', mic_preamp_0, '0']
-- [audio_source_1, '0', mic_preamp_0, '1']
+- [audio_source_0, '1', mic_preamp_1, '0']
+- [audio_source_1, '0', mic_preamp_1, '1']
 - [band_pass_filter_0, '0', analog_agc2_xx_0, '0']
 - [blocks_add_xx_1, '0', ssb_mod_0, '0']
 - [blocks_add_xx_2, '0', audio_sink_0, '0']
@@ -1067,7 +1067,7 @@ connections:
 - [blocks_multiply_const_vxx_0, '0', ssb_demod_0, '0']
 - [blocks_multiply_const_vxx_1, '0', blocks_float_to_complex_0, '0']
 - [blocks_multiply_const_vxx_1, '0', ssb_demod_0, '1']
-- [mic_preamp_0, '0', blocks_add_xx_1, '0']
+- [mic_preamp_1, '0', blocks_add_xx_1, '0']
 - [ssb_demod_0, '0', band_pass_filter_0, '0']
 - [ssb_mod_0, '0', blocks_add_xx_2, '1']
 - [ssb_mod_0, '1', blocks_add_xx_3, '1']
