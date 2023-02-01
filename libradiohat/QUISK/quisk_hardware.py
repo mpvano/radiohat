@@ -64,7 +64,15 @@ class Hardware(BaseHardware):
         #   NewDecim      The decimation changed
         # For "BtnBand", the string band is in the band argument.
         # For the mouse events, the handler event is in the event argument.
-        self.libradiohat.setVFO(tune)
+        self.actualVFO = tune
+#         self.libradiohat.setVFO(tune)
+#         if self.mode == 'CWL':
+#             self.actualVFO += 700
+#         else:
+#             if self.mode == 'CWU':
+#                 self.actualVFO -= 700
+        self.libradiohat.setVFO(self.actualVFO)
+        self.libradiohat.checkLPF(self.actualVFO,c_bool(1))
         return tune, tune
 
     def ReturnFrequency(self):

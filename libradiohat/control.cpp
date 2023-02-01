@@ -1,4 +1,4 @@
-/************************************* February 24, 2022 at 8:42:13 PM CST
+/******************************************* March 25, 2022 at 3:35:37 PM CDT
 *****************************************************************************
 *
 *	A simple example program for a Zero IF Quadrature transceiver
@@ -329,14 +329,20 @@ bool request = !gpioRead(GPIO_PTTIn_line)
 //	hardware TX-RX switching handler, also calls audio switch handler
 void enableTX(bool txon, cAudioMode mode)
 {
+float savedDACVol;				//	must restore this because modulator may need to
+								//	change it and it is needed by built-in audio
+								//	output when receiving
+
 	if (txon)
 		{
+		savedDACVol = getDACVol();
+		setDACVol(0);						//	to prevent a click
 		gpioWrite(GPIO_TXRXRelay_line, 1);
 		gpioWrite(GPIO_notRX_line, 1);
 //		gpioWrite(GPIO_PWRAMP_ON_line, 1);
 		gpioWrite(GPIO_notTX_line, 0);
 		enableTXAudio(txon, mode);
-		usleep(5000);
+//		usleep(5000);
 		gpioWrite(GPIO_PWRAMP_ON_line, 1);
 		}
 	else
@@ -344,9 +350,11 @@ void enableTX(bool txon, cAudioMode mode)
 		enableTXAudio(txon, mode);
 		gpioWrite(GPIO_notTX_line, 1);
 		gpioWrite(GPIO_PWRAMP_ON_line, 0);
-		usleep(500);
+//		usleep(500);
 		gpioWrite(GPIO_TXRXRelay_line, 0);
 		gpioWrite(GPIO_notRX_line,  0);
+		setDACVol(94);
+//		setDACVol(savedDACVol);
 		}	
 }
 

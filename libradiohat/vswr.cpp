@@ -1,4 +1,4 @@
-/*************************************** February 26, 2022 at 2:33:16 PM CST
+/*************************************** March 31, 2022 at 2:05:17 PM CDT
 *
 *	ads1115 ADC io support for VSWR and other sensors
 *
@@ -101,7 +101,7 @@ const int gGAINMAP[] =
 
 //	value chosen to allow or'ing in gain value and channel without masking them
 const uint32_t ADS1115_BASIC_CONFIG = ADS1115_START_Single | ADS1115_MODE_SingleShot
-										| ADS1115_DR_860 | ADS1115_MODE_NO_CMP;
+										| ADS1115_DR_32 | ADS1115_MODE_NO_CMP;
 
 // initial config register contents
 uint32_t gADS1115_config = ADS1115_BASIC_CONFIG;
@@ -170,7 +170,7 @@ int initVSWR(void)
 //	This needs some smoothing, however
 float readVSWR(float * fwdPower)
 {
-const float kPwrCalibration = 1.0;	//	fudge factor
+const float kPwrCalibration = 4;	//	fudge factor
 const float cDirCoupling = 13.0;	//	fractional coupler loss factor
 const float cDiodeDrop = 0.200;		//	germanium diode voltage offset
 const int cTheGain = 0;				//  request lowest gain
@@ -178,21 +178,46 @@ const float cLSBSize = cLSBSIZE_TABLE[cTheGain] * cDirCoupling;
 
 float rev = cDiodeDrop + (cLSBSize * readADC(0, cTheGain));
 float fwd = cDiodeDrop + (cLSBSize * readADC(2, cTheGain));
+float vswr;
 static float rev_last;
 static float fwd_last;
 
+#ifdef SMOOTHVSWR
 	fwd = (fwd + fwd_last)/2;
 	rev = (rev + rev_last)/2;
+	fwd_last = fwd;
+	rev_last = rev;
+#endif
 
 	fwd = (fwd < 0.00001) ? 0.00001 : fwd;	//	crude divide by zero avoidance
 	rev = (rev < 0.00001) ? 0.00001 : rev;
+	vswr = (fwd + rev) / (fwd - rev);	
 
-	float pwr = fwd * 0.7;				//	convert to rms
-	pwr = ((pwr * pwr) / 50.0);			// estimate power in Watts at 50 ohms
-	
-	*fwdPower = pwr * kPwrCalibration;	//	update caller's power variable
-	fwd_last = fwd;
-	rev_last = rev;
-	return (fwd + rev) / (fwd - rev);	//	return the numerator of the VSWR
+	float pwr = fwd / 2.8;							//	convert to rms
+	pwr = ((pwr * pwr) / 50.0) * kPwrCalibration;	// estimate power at 50 ohms
+	*fwdPower = pwr < 0.01 ? 0 : pwr ;				//	update caller's variable
+	return (pwr < 0.01) ? 0 : vswr; 				// return numerator of vswr
 }
 
+//	added to simplify interfacing to Python via cPython
+//	(but you still need to set .restype of calling object)
+float readForwardOnly(void)
+{
+float fwd;
+	readVSWR(&fwd);
+	return fwd;
+}
+
+float readVSWROnly(void)
+{
+float fwd;
+	return readVSWR(&fwd);
+}
+
+//	for general purpose use
+float readADCRaw(int channel, int gain)
+{
+	if ((channel < 0) || (channel > 3)) channel = 0;
+	if ((gain < 0) || (gain < 7)) gain = 0;
+	return cLSBSIZE_TABLE[gain] * readADC(channel, gain);
+}

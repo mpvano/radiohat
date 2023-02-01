@@ -46,7 +46,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [664, 724.0]
+    coordinate: [664, 788.0]
     rotation: 0
     state: enabled
 - name: CW
@@ -54,7 +54,7 @@ blocks:
   parameters:
     comment: ''
     'false': '0'
-    gui_hint: 3,2
+    gui_hint: RXTXTabs@1:1,3
     label: CW
     'true': '1'
     type: real
@@ -63,7 +63,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 724.0]
+    coordinate: [936, 788.0]
     rotation: 0
     state: enabled
 - name: Gain
@@ -96,7 +96,7 @@ blocks:
     min_len: '200'
     orient: Qt.Horizontal
     rangeType: float
-    start: '900'
+    start: '300'
     step: '50'
     stop: '3000'
     value: '2750'
@@ -119,7 +119,7 @@ blocks:
     rangeType: float
     start: '50'
     step: '10'
-    stop: '850'
+    stop: '1000'
     value: '50'
     widget: counter
   states:
@@ -143,7 +143,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [792, 724.0]
+    coordinate: [792, 788.0]
     rotation: 0
     state: enabled
 - name: MuteMic
@@ -160,7 +160,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [536, 724.0]
+    coordinate: [536, 788.0]
     rotation: 0
     state: enabled
 - name: PTT
@@ -177,7 +177,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 588.0]
+    coordinate: [424, 652.0]
     rotation: 0
     state: disabled
 - name: PTT
@@ -194,7 +194,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [456, 572.0]
+    coordinate: [456, 636.0]
     rotation: 0
     state: enabled
 - name: TXTone
@@ -211,7 +211,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 660.0]
+    coordinate: [280, 724.0]
     rotation: 0
     state: enabled
 - name: TXTone1
@@ -228,7 +228,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [280, 788.0]
+    coordinate: [280, 852.0]
     rotation: 0
     state: enabled
 - name: ToneFreq
@@ -249,7 +249,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 652.0]
+    coordinate: [24, 716.0]
     rotation: 0
     state: enabled
 - name: ToneFreq1
@@ -270,7 +270,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [24, 764.0]
+    coordinate: [24, 828.0]
     rotation: 0
     state: enabled
 - name: ToneLevel
@@ -291,7 +291,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [152, 652.0]
+    coordinate: [152, 716.0]
     rotation: 0
     state: enabled
 - name: ToneLevel1
@@ -312,14 +312,14 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [152, 764.0]
+    coordinate: [152, 828.0]
     rotation: 0
     state: enabled
 - name: VFO
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: 4,0,1,3
+    gui_hint: 3,2
     label: VFO
     min_len: '3000'
     orient: Qt.Horizontal
@@ -333,7 +333,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 564.0]
+    coordinate: [584, 628.0]
     rotation: 0
     state: true
 - name: Volume
@@ -408,7 +408,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [424, 716.0]
+    coordinate: [424, 780.0]
     rotation: 0
     state: enabled
 - name: RXTXTabs
@@ -507,7 +507,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [200, 460.0]
+    coordinate: [176, 572.0]
     rotation: 0
     state: enabled
 - name: audio_sink_0
@@ -516,7 +516,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: hw:RadioHatCodec,0
+    device_name: GRC_IQ_OUT
     num_inputs: '2'
     ok_to_block: 'False'
     samp_rate: samp_rate
@@ -524,7 +524,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 416.0]
+    coordinate: [1024, 472.0]
     rotation: 0
     state: enabled
 - name: audio_sink_1
@@ -533,7 +533,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: ''
+    device_name: GRC_CONSOLE_OUT
     num_inputs: '1'
     ok_to_block: 'False'
     samp_rate: '48000'
@@ -550,7 +550,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: hw:RadioHatCodec,1
+    device_name: GRC_IQ_INPUT
     maxoutbuf: '0'
     minoutbuf: '0'
     num_outputs: '2'
@@ -569,7 +569,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    device_name: ''
+    device_name: GRC_MIC_INPUT
     maxoutbuf: '0'
     minoutbuf: '0'
     num_outputs: '1'
@@ -658,7 +658,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [888, 464.0]
+    coordinate: [880, 488.0]
     rotation: 0
     state: true
 - name: blocks_float_to_complex_0
@@ -691,7 +691,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 564.0]
+    coordinate: [776, 692.0]
     rotation: 0
     state: true
 - name: blocks_message_strobe_0_0
@@ -708,7 +708,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [784, 628.0]
+    coordinate: [808, 628.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -778,7 +778,7 @@ blocks:
       \        gr.basic_block.__init__(\n            self,\n            name='libradiohat',\
       \   # will show up in GRC\n            in_sig = None,\n            out_sig =\
       \ None\n        )\n        self.libradiohat = CDLL(\"/home/pi/radiohat/libradiohat/libradiohat.so\"\
-      )\n        self.libradiohat.initVFO(20000,7074000,12288000)\n#        self.libradiohat.cachePLLDivisor(False);\n\
+      )\n        self.libradiohat.initVFO(21800,7074000,12288000)\n#        self.libradiohat.cachePLLDivisor(False);\n\
       \        self.libradiohat.setVFO(707400)\n        self.libradiohat.initCodec()\n\
       \        self.libradiohat.setADCVol(c_double(0.5))\n        self.libradiohat.initControl()\n\
       \        self.message_port_register_in(pmt.intern('freq'))\n        self.set_msg_handler(pmt.intern('freq'),self.handle_msg)\n\
@@ -801,12 +801,12 @@ blocks:
     maxoutbuf: '0'
     minoutbuf: '0'
   states:
-    _io_cache: ('libradiohat', 'blk', [], [('freq', 'message', 1), ('ptt', 'message',
+    _io_cache: ('libradiohat', 'blk', [], [('ptt', 'message', 1), ('freq', 'message',
       1)], [], 'Embedded Python Block example - a simple multiply const', [])
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 592.0]
+    coordinate: [1120, 664.0]
     rotation: 0
     state: true
 - name: mic_preamp_1
@@ -1019,8 +1019,8 @@ blocks:
     style9: '1'
     tr_chan: '0'
     tr_delay: '0'
-    tr_level: '0.05'
-    tr_mode: qtgui.TRIG_MODE_AUTO
+    tr_level: '0.0'
+    tr_mode: qtgui.TRIG_MODE_FREE
     tr_slope: qtgui.TRIG_SLOPE_POS
     tr_tag: '""'
     type: float
@@ -1043,7 +1043,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1064, 508.0]
+    coordinate: [1048, 572.0]
     rotation: 0
     state: enabled
 - name: ssb_demod_0

@@ -1,4 +1,4 @@
-/************************************* February 23, 2022 at 11:43:19 AM CST
+/******************************************* March 25, 2022 at 3:36:24 PM CDT
 *****************************************************************************
 *	SGTL5000 Sound card initialization and control support.
 *	Initializes sound card and controls TX-RX mixer switching
@@ -330,15 +330,26 @@ int initSGTLRegisters(void)
 
 //	IMPORTANT: REMEMBER THAT AGC ONLY WORKS WITH INTERNAL AUDIO TO HEADSET
 //	returns true if succeeds (for now)
+//	Note also that DAC Volume level MUST BE SAVED AND RESTORED BY CALLER
+//	The rest of RX state saving should probably also be moved there eventually
+//	or assumptions made by the receiver and by other TX routines may fail
+//	Ramps like this one should probably be used for all modes, but different slopes
 int enableTXAudio(bool txon, cAudioMode mode)
 {
+//const float keyramp[] = { 0,10,20,30,65,80,85,88,90,92,93,94 };
+//const float unkeyramp[] = { 94,93,92,90,88,85,80,65,30,20,10,0 };
+const float keyramp[] 	= { 20,65,85,90,93,94 };
+const float unkeyramp[] = { 94,93,90,85,65,20 };
+//const float keyramp[] 	= { 20,85,90,94 };
+//const float unkeyramp[] = { 94,90,85,20 };
+
 	if (txon)
 		{
 		muteHpVol(true);
 		enableAGC(false);
 		writeSGTL(CHIP_LINE_OUT_VOL,0x0303);	//	normal TX max line Volume
 		
-		//	Expiremental
+		//	Experimental
 #ifdef USE_ROLLOFF
 		writeSGTL(DAP_AUDIO_EQ_TREBLE_BAND4,0);	//	maximum cut at 9900hz
 		writeSGTL(CHIP_SSS_CTRL,0x0170);		// I2S->DSP->DAC
@@ -357,19 +368,27 @@ int enableTXAudio(bool txon, cAudioMode mode)
 			//	Mute DAC except lineout to tx and loopback to I2S
 			writeSGTL(CHIP_ANA_CTRL,0x0013);
 			writeSGTL(CHIP_ANA_ADC_CTRL,0x0100);//	ADC LR (0-22.5db) to -6db (min)
-			writeSGTL(CHIP_SSS_CTRL,0x00011);	// enable echo of tone
+			writeSGTL(CHIP_SSS_CTRL,0x00010);	// do not enable echo of tone
+//			writeSGTL(CHIP_SSS_CTRL,0x00011);	// enable echo of tone
+			for (int i=0; i < (sizeof(keyramp)/sizeof(float)); i++)
+				setDACVol(keyramp[i]);	//	gets timed by i2c
 			}
 		else
 			{
 			//	FOR TRANSMITTING: MIC_IN -> DAC,  ADC -> I2S_OUT
 			writeSGTL(CHIP_ANA_CTRL,0x0010);	//	mute all but lineout from ADC/DAC
 			writeSGTL(CHIP_ANA_ADC_CTRL,0x0077);// ADC (0-22.5db) to +10.5db for mic
+			setDACVol(94);
 			}
 		}
 	else	//	txon is false - setup for receiving
 		{
 		if (mode == CW_AUDIO)
+			{
+			for (int i=0; i < (sizeof(unkeyramp)/sizeof(float)); i++)
+				 setDACVol(unkeyramp[i]);	//	gets timed by i2c
 			writeSGTL(CHIP_SSS_CTRL,0x00010);	//	Disable tone echo
+			}
 		
 		//	FOR RECEIVING:	I2S in to DAC and I2S out from ADC
 #ifdef USE_ROLLOFF

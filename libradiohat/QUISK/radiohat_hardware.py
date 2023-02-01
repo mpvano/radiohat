@@ -65,6 +65,7 @@ class Hardware(BaseHardware):
         # For "BtnBand", the string band is in the band argument.
         # For the mouse events, the handler event is in the event argument.
         self.libradiohat.setVFO(tune)
+        self.libradiohat.checkLPF(self.actualVFO,c_bool(1))
         return tune, tune
 
     def ReturnFrequency(self):

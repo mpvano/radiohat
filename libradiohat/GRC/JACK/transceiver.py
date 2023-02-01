@@ -149,10 +149,10 @@ class transceiver(gr.top_block, Qt.QWidget):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
         self._VFO_range = Range(3500, 32000000, 100, 7074000, 3000)
         self._VFO_win = RangeWidget(self._VFO_range, self.set_VFO, 'VFO', "counter_slider", int)
-        self.top_grid_layout.addWidget(self._VFO_win, 4, 0, 1, 3)
-        for r in range(4, 5):
+        self.top_grid_layout.addWidget(self._VFO_win, 3, 2, 1, 1)
+        for r in range(3, 4):
             self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 3):
+        for c in range(2, 3):
             self.top_grid_layout.setColumnStretch(c, 1)
         self._ToneLevel1_range = Range(0, 1, .01, 0.25, 200)
         self._ToneLevel1_win = RangeWidget(self._ToneLevel1_range, self.set_ToneLevel1, 'Level 1', "counter", float)
@@ -237,14 +237,14 @@ class transceiver(gr.top_block, Qt.QWidget):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._LPF_range = Range(50, 850, 10, 50, 200)
+        self._LPF_range = Range(50, 1000, 10, 50, 200)
         self._LPF_win = RangeWidget(self._LPF_range, self.set_LPF, 'High pass', "counter", float)
         self.RXTXTabs_grid_layout_0.addWidget(self._LPF_win, 1, 0, 1, 1)
         for r in range(1, 2):
             self.RXTXTabs_grid_layout_0.setRowStretch(r, 1)
         for c in range(0, 1):
             self.RXTXTabs_grid_layout_0.setColumnStretch(c, 1)
-        self._HPF_range = Range(900, 3000, 50, 2750, 200)
+        self._HPF_range = Range(300, 3000, 50, 2750, 200)
         self._HPF_win = RangeWidget(self._HPF_range, self.set_HPF, 'Low pass', "counter", float)
         self.RXTXTabs_grid_layout_0.addWidget(self._HPF_win, 1, 1, 1, 1)
         for r in range(1, 2):
@@ -264,11 +264,11 @@ class transceiver(gr.top_block, Qt.QWidget):
         self._CW_callback = lambda i: Qt.QMetaObject.invokeMethod(_CW_check_box, "setChecked", Qt.Q_ARG("bool", self._CW_choices_inv[i]))
         self._CW_callback(self.CW)
         _CW_check_box.stateChanged.connect(lambda i: self.set_CW(self._CW_choices[bool(i)]))
-        self.top_grid_layout.addWidget(_CW_check_box, 3, 2, 1, 1)
-        for r in range(3, 4):
-            self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(2, 3):
-            self.top_grid_layout.setColumnStretch(c, 1)
+        self.RXTXTabs_grid_layout_1.addWidget(_CW_check_box, 1, 3, 1, 1)
+        for r in range(1, 2):
+            self.RXTXTabs_grid_layout_1.setRowStretch(r, 1)
+        for c in range(3, 4):
+            self.RXTXTabs_grid_layout_1.setColumnStretch(c, 1)
         _ALSA_check_box = Qt.QCheckBox('ALSA')
         self._ALSA_choices = {True: 1, False: 0}
         self._ALSA_choices_inv = dict((v,k) for k,v in self._ALSA_choices.items())
@@ -302,7 +302,7 @@ class transceiver(gr.top_block, Qt.QWidget):
         self.qtgui_time_sink_x_0.set_y_label('Amplitude', "")
 
         self.qtgui_time_sink_x_0.enable_tags(False)
-        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_AUTO, qtgui.TRIG_SLOPE_POS, 0.05, 0, 0, "")
+        self.qtgui_time_sink_x_0.set_trigger_mode(qtgui.TRIG_MODE_FREE, qtgui.TRIG_SLOPE_POS, 0.0, 0, 0, "")
         self.qtgui_time_sink_x_0.enable_autoscale(False)
         self.qtgui_time_sink_x_0.enable_grid(True)
         self.qtgui_time_sink_x_0.enable_axis_labels(True)
@@ -412,10 +412,10 @@ class transceiver(gr.top_block, Qt.QWidget):
                 100,
                 firdes.WIN_BLACKMAN,
                 6.76))
-        self.audio_source_1 = audio.source(samp_rate, '', True)
-        self.audio_source_0 = audio.source(samp_rate, 'hw:RadioHatCodec,1', False)
-        self.audio_sink_1 = audio.sink(48000, '', False)
-        self.audio_sink_0 = audio.sink(samp_rate, 'hw:RadioHatCodec,0', False)
+        self.audio_source_1 = audio.source(samp_rate, 'GRC_MIC_INPUT', True)
+        self.audio_source_0 = audio.source(samp_rate, 'GRC_IQ_INPUT', False)
+        self.audio_sink_1 = audio.sink(48000, 'GRC_CONSOLE_OUT', False)
+        self.audio_sink_0 = audio.sink(samp_rate, 'GRC_IQ_OUT', False)
         self.analog_sig_source_x_0_0 = analog.sig_source_f(samp_rate, analog.GR_COS_WAVE, ToneFreq1, ToneLevel1 * TXTone1, 0, 0)
         self.analog_sig_source_x_0 = analog.sig_source_f(samp_rate, analog.GR_COS_WAVE, ToneFreq, (ToneLevel * TXTone)*(1-CW) + (ToneLevel * CW), 0, 0)
         self.analog_agc2_xx_0 = analog.agc2_ff(1e-3, 1e-2, 1.7, 1.0)

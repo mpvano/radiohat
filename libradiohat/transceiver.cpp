@@ -1,4 +1,5 @@
-/************************************* February 23, 2022 at 11:11:13 AM CST
+/*	December 24, 2022 at 6:17:47 AM CST
+*****************************************************************************
 *****************************************************************************
 *
 *	A simple example program for a Zero IF Quadrature transceiver
@@ -38,14 +39,34 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <termios.h>
 
 #include "radiohat.h"
 
 
-//	GLOBALS
+//	GLOBALS from other modules (need to be eliminated!)
 bool gLSBMode = false;			//	output polarities switch phase sequence
 bool gNeedsVFOUpdate = false;	//	 used in some polled mode apps
 
+
+//	controls stdio echo and line buffering behavior
+void setRawConsole(void)
+{
+struct termios the_settings;
+
+	tcgetattr(STDIN_FILENO,&the_settings);
+		the_settings.c_lflag &= (~ICANON & ~ECHO) ;
+	tcsetattr(STDIN_FILENO, TCSANOW, &the_settings);
+}
+
+void unsetRawConsole(void)
+{
+struct termios the_settings;
+
+	tcgetattr(STDIN_FILENO,&the_settings);
+	the_settings.c_lflag |= (ICANON | ECHO) ;
+	tcsetattr(STDIN_FILENO, TCSANOW, &the_settings);
+}
 
 
 //	checks for a file called "CALFACTOR.txt" in same directory where the
@@ -78,7 +99,341 @@ FILE * theFile = NULL;
   	return calfactor;
 }
 
-/*****************************************************************************
+
+/*
+******************************************************************************
+*	A simple CAT transceiver control
+*
+*	(assumes raw console instead of ncurses)
+*	start the program using socat like this (e.g.):
+*
+*		socat -d -d pty,raw,echo=0 \
+*			exec:"/home/pi/radiohat/libradiohat/transceiver -c",pty,raw,setsid
+*	
+*	The -d options will print the name of the pty on stderr.
+*	Note that pty are assigned dynamically in order from 1,
+*	so the pty number may vary depending on other pty
+*	started ahead of this socat invocation!
+*
+*	(for debugging, add -v to echo all data to stderr)
+*
+*	emulates a subset of the Kenwood TS-480 CAT commands
+*	
+*	Note that most commands send no response at all if args were supplied
+*
+*****************************************************************************/
+bool cat_interface(void)
+{
+//	saved state of radio
+//	kenwood radio modes
+enum kKWMODE { KWLSB=1, KWUSB, KWCW, KWFM, KWAM, KWFSK, KWCW_R, KWFSK_R };
+bool transmitter_on = false;
+bool digitalMode = false;
+bool cwMode = false;
+long int VFOa = getVFO();
+long int VFOb = getVFO();
+int RXvfo = 0;		//	0 = VFOa, 1 = VFOb
+int TXvfo = 0;
+long int RIToffset = 0;
+bool RITon = false;
+bool XITon = false;
+int DSPbw = 0;
+int kw_mode = KWUSB;
+
+
+//	state machine variables
+enum CATSTATES { kIdle=0, kWaitForCommand1, kWaitForCommand2, kCollectParams };
+char cmdbyte1, cmdbyte2;
+const int kMaxCmdParmBytes = 32;
+char cmdparms[kMaxCmdParmBytes];
+int cmdParmCount = 0;
+int cmdParmExpected = 0;
+long int convertedParm = 0;
+int catstate = kIdle;
+int c;
+
+#define CAT_ERROR_REPLY "?;"
+
+	// could set up socat and open port here or let enclosing script do it
+
+	while (true)
+		{
+		if (cwMode)			//	not presently useful because the loop blocks at getc
+			checkKeydown();
+
+		//	should add some kind of long timeout here to facilitate restarting
+    	if ((c = getc(stdin)) > 0) switch (catstate)
+			{
+			case kIdle:
+				catstate = kWaitForCommand1;
+				cmdParmCount = cmdParmExpected = 0;
+				cmdparms[0] = '\0';
+				cmdbyte1 = cmdbyte2 = 0;
+				convertedParm = 0;
+				catstate = kWaitForCommand1;
+				//	FALL THROUGH to process the received character
+
+			//	waiting for first command letter
+			case kWaitForCommand1:
+				if (isalpha(c))
+					{
+					cmdbyte1 = toupper(c);
+					catstate = kWaitForCommand2;
+					}
+				break;
+
+
+			//	waiting for second command letter
+			case kWaitForCommand2:
+				if (isalpha(c))
+					{
+					cmdbyte2 = toupper(c);
+					catstate = kCollectParams;	//	assume success!
+					
+					//	now check if legal command and set proper expected length
+					if ((cmdbyte1 == 'A') && (cmdbyte2=='G'))
+						cmdParmExpected = 4;	//	AF Gain
+					else if  (cmdbyte1 == 'F')
+						{
+						switch (cmdbyte2)
+							{
+							case 'A':	cmdParmExpected = 11; break;	//	vfo A
+							case 'B':	cmdParmExpected = 11; break;	//	vfo B
+							case 'R':	cmdParmExpected = 1; break;		//	set RX VFO
+							case 'T':	cmdParmExpected = 1; break;		//	set TX VFO
+							case 'W':	cmdParmExpected = 4; break;		//	set DSP BW
+							default:	catstate = kIdle; printf(CAT_ERROR_REPLY); break;
+							}
+						}
+					else if  ((cmdbyte1 == 'I') && (cmdbyte2=='D'))
+						cmdParmExpected = 0; 	//	send HW ID command (no args!)
+					else if  ((cmdbyte1 == 'I') && (cmdbyte2=='F'))
+						cmdParmExpected = 0; 	//	read info command (no args!)
+					else if  ((cmdbyte1 == 'M') && (cmdbyte2=='D'))
+						cmdParmExpected = 1; 	//	read mode command (no args!)
+					else if  (cmdbyte1 == 'R') switch (cmdbyte2)
+						{
+						case 'D':	cmdParmExpected = 5; break;	//	RIT neg offset
+						case 'T':	cmdParmExpected = 1; break;	//	RIT on or off
+						case 'U':	cmdParmExpected = 5; break;	//	RIT pos offset
+						case 'X':	cmdParmExpected = 0; break;//	RX func status
+						default:	catstate = kIdle; printf(CAT_ERROR_REPLY); break;
+						}
+					else if  ((cmdbyte1 == 'T') && (cmdbyte2=='X'))
+						cmdParmExpected = 1; 	//	TX command
+					else { catstate = kIdle ; printf(CAT_ERROR_REPLY); } 
+					}
+				else { catstate = kIdle; printf(CAT_ERROR_REPLY); }
+				break;
+
+				
+			//	collecting generic params until ';'
+			//	if terminator received: validate, parse and execute
+			case kCollectParams:	
+				if (c != ';')			// we're not done yet
+					{
+					// must be digit or ';' and command must not exceed expectd length
+					if ( (!isdigit(c)) || (cmdParmCount >=  cmdParmExpected) )
+						 { catstate = kIdle; printf(CAT_ERROR_REPLY); } 
+					else
+						{
+						cmdparms[cmdParmCount++] = c;
+						cmdparms[cmdParmCount] = 0;
+						}	//	its an expected digit, just save it and continue
+					}
+					
+				else //	got terminator - parse, execute if we can only reply to queries
+					{
+					catstate = kIdle;				//	finished, one way or another
+					convertedParm = atol(cmdparms);	//	convert from string
+					
+					// volume setting?
+					if ((cmdbyte1 == 'A') && (cmdbyte2=='G'))	//	AF Gain
+						{
+						int v;
+						if (cmdParmCount)
+							{
+							if (convertedParm <= 255)
+								{
+								v = (convertedParm * 100) / 255;
+								setHpVol(v);
+								}
+							}
+						else {
+							v = (getHpVol() * 255)/99;
+							printf("%c%c%04i;", cmdbyte1, cmdbyte2, v);
+							}
+						}
+
+					// VFO command?
+					//	for now, always just use VFOa
+					else if  (cmdbyte1 == 'F') switch (cmdbyte2)
+						{
+						case 'A':	//	vfo A
+						case 'B':	//	vfo B		//	for now only 1 vfo
+							if (cmdParmCount)
+								{
+								VFOa = VFOb = convertedParm;
+								if (VFOa < 3300000L) VFOa = 3300000L;
+								if (VFOa > 32000000L) VFOa = 32000000L;
+								setVFO(VFOa);
+								checkLPF(VFOa, true);
+								}
+							else printf("%c%c%011li;", cmdbyte1, cmdbyte2, VFOa);
+							break;
+														
+						case 'R':	//	switch RX VFO to VFO A or B
+						case 'T':	//	set TX VFO to VFO A or B
+							if (cmdParmCount)
+								RXvfo = TXvfo = 0;		//	both use VFO A for now
+							else printf("%c%c%1i;", cmdbyte1, cmdbyte2, RXvfo);
+							break;
+												
+						// FIXME: The arguments need far more mode dependent checking!!!
+						case 'W':	//	set DSP BW
+							if (cmdParmCount)
+								DSPbw = convertedParm;
+							else printf("%c%c%03i;", cmdbyte1,cmdbyte2, DSPbw);
+							break;
+						
+						default:
+							catstate = kIdle;
+							printf("CAT_ERROR_REPLY"); 
+							break;
+						}
+
+					// HW ID command?
+					//	read-only info command (no args!)
+					else if  ((cmdbyte1 == 'I') && (cmdbyte2=='D'))
+						printf("%c%c%s;",cmdbyte1, cmdbyte2, "020");
+						
+					// info command?
+					//	read-only info command (no args!)
+					//	WE  return	"IF00007074000     +00000000002000000 ;"
+					else if  ((cmdbyte1 == 'I') && (cmdbyte2=='F'))
+						printf("%c%c%011li     %c%04li%01i%01i000%01i%01i%s;", 
+								cmdbyte1, cmdbyte2,
+								VFOa, (RIToffset >= 0 ? '+' : '-'),
+								abs(RIToffset), RITon, XITon,
+								transmitter_on, kw_mode,
+								"000000 ");	//	dummies for the rest
+
+					// mode command
+					else if  ((cmdbyte1 == 'M') && (cmdbyte2=='D'))
+						{
+						if (cmdParmCount)
+							{
+							switch(convertedParm)
+								{
+								case KWLSB:
+									cwMode = false;
+									digitalMode = false;
+									swapPhaseVFO(true);
+									gLSBMode = true;
+									break;
+									
+								case KWUSB:
+									cwMode = false;
+									digitalMode = false;
+									swapPhaseVFO(false);
+									gLSBMode = false;
+									break;
+
+								case KWCW:
+									cwMode = true;
+									digitalMode = false;
+									swapPhaseVFO(false);
+									gLSBMode = false;
+									break;
+
+								case KWFM:
+								case KWAM:
+								case KWFSK:
+									digitalMode = false; // true enables DTR keying
+									swapPhaseVFO(false);
+									gLSBMode = false;
+									break;
+
+								case KWCW_R:
+									cwMode = false;
+									digitalMode = false;
+									swapPhaseVFO(true);
+									gLSBMode = true;
+									break;										
+
+								case KWFSK_R:
+									cwMode = false;
+									digitalMode = false;
+									swapPhaseVFO(true);
+									gLSBMode = true;
+									break;										
+								
+								default:
+									break;
+								}
+							kw_mode = convertedParm;
+							}
+						else printf("%c%c%01i;", cmdbyte1, cmdbyte2, kw_mode);
+						}
+
+					// RIT command?
+					else if  (cmdbyte1 == 'R') switch (cmdbyte2)
+						{
+						case 'D':	//	RIT neg offset
+							if (cmdParmCount)
+								RIToffset = -(convertedParm);
+							else if (--RIToffset < -99999)
+									RIToffset = -99999;
+							break;
+						case 'T':	//	RIT on or off
+							if (cmdParmCount)
+								RITon = (convertedParm == 1);
+							else printf("%c%c%01i;", cmdbyte1, cmdbyte2, RITon==1);
+							break;
+						case 'U':	//	RIT pos offset
+							if (cmdParmCount)
+								RIToffset = convertedParm;
+							else if (++RIToffset > 99999)
+									RIToffset = 99999;
+							break;
+						case 'X':	//	RX func status  transmitter off
+							transmitter_on = false;
+							enableTX(transmitter_on, NORMAL_AUDIO);
+							break;
+						default:
+							{ catstate = kIdle; printf("CAT_ERROR_REPLY"); }
+							break;
+						}
+
+					// Transmit command?
+					//	note peculiar parameter semantics:
+					//		Always transmit regardless of Parm1 presence or value
+					//		and always return TX0; regardless of param actually sent
+					else if  ((cmdbyte1 == 'T') && (cmdbyte2=='X'))
+						{
+						transmitter_on = true;
+						if (cmdParmCount==0) digitalMode = 0;
+						else digitalMode = (cmdparms[0] == '1');
+						enableTX(	transmitter_on,
+									digitalMode ? DIGITAL_AUDIO : NORMAL_AUDIO);
+						}
+
+					// None of the above!
+					else { catstate = kIdle; printf(CAT_ERROR_REPLY); }
+
+					fflush(stdout);
+					}
+				break;
+			}	//	of state machine switch statement
+
+		}
+	return true;
+}
+
+
+
+/*
+******************************************************************************
 *	a simple ncurses frequency control keyboard UI
 *
 *	controls:
@@ -338,7 +693,6 @@ const int num_weights = sizeof(weights)/sizeof(*weights);
 				move(TXRX_LINE,5);
 				addstr( "Receive              ");
 				move(TXRX_LINE,15);
-				move(HZ_LINE,current_column);
 				refresh();
 				}
 
@@ -355,7 +709,8 @@ const int num_weights = sizeof(weights)/sizeof(*weights);
 }
 
 
-/****************************************************************************
+/*
+*****************************************************************************
 *****************************************************************************
 *	Main
 *
@@ -370,6 +725,7 @@ const int num_weights = sizeof(weights)/sizeof(*weights);
 int main(int argc, char * argv[])
 {
 bool initonly = (argc == 2) && (*(argv[1]) == '-') && (*(argv[1]+1) == 'i');
+bool catMode =  (argc == 2) && (*(argv[1]) == '-') && (*(argv[1]+1) == 'c');
 
 //	the string argument is expected to be the program name
 const char * exitmsgs[] =
@@ -396,12 +752,24 @@ const char * exitmsgs[] =
 
 		if (!initonly)
 			{
-			WINDOW * w = initscr();		// ncurses setup
-			timeout(1);
-			noecho();
-			keypad(w,true);
-			atexit([]{ endwin(); });
-			vfo_interface();			//	loop processing input
+			if (catMode)
+				{
+				setRawConsole();
+				atexit([]{ unsetRawConsole(); });
+				fprintf(stderr,"Kenwood TS-480 cat command mode - Ctrl-C to exit\n");
+				cat_interface();
+				unsetRawConsole();
+				}
+			else
+				{
+				WINDOW * w = initscr();		// ncurses setup
+				timeout(1);
+				noecho();
+				keypad(w,true);
+				atexit([]{ endwin(); });
+				vfo_interface();			//	loop processing input
+				endwin();
+				}
 			}
 		}
 
