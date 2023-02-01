@@ -1,5 +1,8 @@
 # libradiohat - experimental version and tools #
-### Added 1-March-2022 ###
+
+## NEWS 1-Feb-2023 ##
+
+Added experimental minimal Kenwood TS480 CAT control support to "transceiver.cpp" and new control-less GnuRadio USB conversion filter. Together with a SOCAT redirection command, ALSA loopback and Pulse Audio output capture this allows full proper operation of WSJT-X.
 
 ## NEWS 6-march-2022 ##
 
