@@ -25,7 +25,7 @@ class blk(gr.basic_block):  # other base classes are basic_block, decim_block, i
         self.libradiohat = CDLL("/home/pi/radiohat/libradiohat/libradiohat.so")
         self.libradiohat.initVFO(20000,7074000,12288000)
 #        self.libradiohat.cachePLLDivisor(False);
-        self.libradiohat.setVFO(707400)
+        self.libradiohat.setVFO(7074000)
         self.libradiohat.initCodec()
         self.libradiohat.setADCVol(c_double(0.5))
         self.libradiohat.initControl()
@@ -36,15 +36,15 @@ class blk(gr.basic_block):  # other base classes are basic_block, decim_block, i
         self.ptt = 0
         self.VFO = 7074000000
         return
- 
+
     def handle_msg(self,msg):
         self.vfomsg = int(pmt.to_double(msg))
         if (self.VFO != self.vfomsg):
             self.libradiohat.setVFO(self.vfomsg)
-            self.libradiohat.checkLPF(self.vfomsg,c_bool(1))
+            self.libradiohat.checkLPF(self.vfomsg,c_bool(0))
             self.VFO = self.vfomsg
         return
- 
+
     def handle_msg1(self,msg):
         self.pttmsg = pmt.to_long(msg)
         if (self.pttmsg != self.ptt):

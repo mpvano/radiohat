@@ -1,4 +1,5 @@
-/******************************************* March 25, 2022 at 3:35:37 PM CDT
+/*
+**************************************** February 23, 2023 at 10:59:26 AM CST
 *****************************************************************************
 *
 *	A simple example program for a Zero IF Quadrature transceiver
@@ -17,12 +18,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdint.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <linux/i2c-dev.h>
 #include <gpiod.h>
+
 #include "control.h"
 #include "codec.h"
 
 
-/****************************************************************************
+
+/*
+***************************************************************************
 *
 *	GPIO Assignments:
 *
@@ -231,8 +241,204 @@ struct gpiod_chip * line;
 	return result;
 }
 
+/*
+*****************************************************************************
+*	mcp 23017 I2C gpio output support
+*	currently uses hardcoded bit assignments to simplify hardware tests
+*****************************************************************************/
+const int mc23017_0 = 0x20;
+const int IODIRA = 0x00;
+const int IODIRB = 0x01;
+const int IOCON = 0x05;
+const int GPIOA = 0x12;
+const int GPIOB = 0x13;
+const int OLATA = 0x14;
+const int OLATB = 0x15;
 
-/****************************************************************************
+int gMC23017fd = 0;
+
+int openI2CGPIO(int busaddr)
+{
+	// Start I2C comms
+   int reg_val = false;
+   if (		((gMC23017fd = open("/dev/i2c-1", O_RDWR)) >= 0)
+   		&&	(ioctl(gMC23017fd, I2C_SLAVE, busaddr & 0xff) >= 0) )
+   		reg_val = true;
+	return reg_val;
+}
+
+int writeI2CGPIO(uint8_t addr, uint8_t data)
+{
+uint8_t buf[2];
+int result = 0;
+
+	if (gMC23017fd)
+		{
+		buf[0]=addr; buf[1]=data;
+		result = write(gMC23017fd, buf, 2);
+		result = (result < 0) ? 0 : 1;
+		}
+	return result;
+}
+
+//	the Linux I2C system driver takes the first byte in the past buffer
+//	and uses it to set the register value sent to the I2C device!
+int readI2CGPIO(uint8_t addr)
+{
+	uint8_t reg_val = -1;
+	uint8_t buf[2];
+	buf[0] = addr;
+
+	if (gMC23017fd)
+		{
+		if ((write(gMC23017fd, buf, 1) == 1) && ((read(gMC23017fd, buf, 1)) > 0))
+			reg_val = buf[0];
+		}
+	if (reg_val < 0)
+		perror("fail in readi2cgpio\n");
+	return reg_val;
+}
+
+
+//	the second 8 GPIOS are usually non-latching relays
+int setRelay(int theRelay, int theGPIO, int theOLAT, bool value)
+{
+int portvalue = readI2CGPIO(theOLAT);
+
+	if (portvalue < 0)
+		return portvalue;
+	else {
+		portvalue &= 0X00FF;
+		if (value) portvalue |= (1 << theRelay);
+		else portvalue &= (~( 1 << theRelay) & 0x00FF);
+		return (writeI2CGPIO(theGPIO, portvalue) != 0);
+		}
+}
+
+
+//	relay 0 is a reset line to all the latching relays
+//	relays 1-7 are mutually exclusive latching relays and must be pulsed
+//	this always tries to clear the relay bit, even if the set operation fails
+//	All the latching relays are usually on port A.
+int pulseRelay(int theRelay)
+{
+int result = false;
+int result2 = false;
+
+	result = setRelay(theRelay, GPIOA, OLATA, true);
+	usleep(5000);
+	result2 = setRelay(theRelay, GPIOA, OLATA, false);
+
+	return result && result2;
+}
+
+//	writes all relay bits at once without disturbing other bits
+int writeLPFRelays(uint8_t byteval)
+{
+int portvalue = readI2CGPIO(OLATB);
+
+	if (portvalue < 0)
+		return portvalue;
+	else {
+		portvalue &= 0xFF70;		//	zero the relay bits
+		portvalue |= (byteval & 0x001f);
+		return (writeI2CGPIO(GPIOB,portvalue) != 0);
+		}
+}
+
+
+
+void checkRelays(uint32_t frequency, bool nocache)
+{
+const uint32_t LPF1_LIMIT = 30000000L;
+const uint32_t LPF2_LIMIT = 25000000L;
+const uint32_t LPF3_LIMIT = 14500000L;
+const uint32_t LPF4_LIMIT = 7500000L;
+const uint32_t LPF5_LIMIT = 4000000L;
+
+const uint32_t PRE1_LIMIT = 18500000L;
+const uint32_t PRE2_LIMIT = 10500000L;
+const uint32_t PRE3_LIMIT = 5600000L;
+
+int theLPfilter;
+int thePREfilter;
+static int lastLPfilter = -1;
+static int lastPREfilter = -1;
+
+		if (frequency < LPF5_LIMIT)			theLPfilter = 0x10;
+		else if (frequency < LPF4_LIMIT)	theLPfilter = 0x08;
+		else if (frequency < LPF3_LIMIT)	theLPfilter = 0x04;
+		else if (frequency < LPF2_LIMIT)	theLPfilter = 0x02;
+		else theLPfilter = 0x01;
+		if (nocache || (lastLPfilter != theLPfilter))
+			{
+			writeLPFRelays(theLPfilter & 0x001f);
+			lastLPfilter = theLPfilter;
+			}
+	
+		if (frequency < PRE3_LIMIT)			thePREfilter = 1;
+		else if (frequency < PRE2_LIMIT)	thePREfilter = 2;
+		else if (frequency < PRE1_LIMIT)	thePREfilter = 3;
+		else thePREfilter = 0;
+		if (nocache || (lastPREfilter != thePREfilter))
+			{
+			pulseRelay(0);
+			pulseRelay(thePREfilter);
+			lastPREfilter = thePREfilter;
+			}
+}
+
+void setRelayTXANT(bool txOn)
+{	setRelay(7, GPIOB, OLATB, txOn); }
+
+void setRelayPwramp(bool pwrampOn)
+{	setRelay(6,  GPIOB, OLATB, pwrampOn);  }
+
+//	these have no connectors or buffers, but they're included to allow
+//	experimentation with controlling the Radiohat board from I2C as well.
+//	Note that the mixer enables are active LOW!
+void setRelayTXMixer(bool txMixerOn)
+{	setRelay(7,  GPIOA, OLATA, ! txMixerOn);  }
+
+void setRelayRXMixer(bool rxMixerOn)
+{	setRelay(6,  GPIOA, OLATA, ! rxMixerOn); 
+}
+
+
+
+int initRelays(void)
+{
+int result = false;
+int result2 = false;
+
+	if (	(openI2CGPIO(mc23017_0) != 0)
+		&&	(writeI2CGPIO(IOCON,0) != 0)	//	Global config register
+		&&	(writeI2CGPIO(IODIRA,0) != 0)	//	dir registers all to output
+		&&	(writeI2CGPIO(IODIRB,0) != 0)
+		&&	(writeI2CGPIO(GPIOA,0) != 0)
+		&&	(writeI2CGPIO(GPIOB,0) != 0)
+		&&	pulseRelay(0)					//	send reset pulse to all relays
+		) result = true;
+
+	if (result)
+		checkRelays(28000000L, true);
+	else
+		perror("Open mc23017 failed\n");
+	return result;
+}
+
+int uninitRelays(void)
+{
+	if (gMC23017fd)
+		close(gMC23017fd);
+	return true;
+}
+
+
+
+
+/*
+*****************************************************************************
 *	support functions for QRP labs filter board
 *
 *	Note that the QRP labs filter board has funny wiring for filter 1.
@@ -253,6 +459,8 @@ const uint32_t LPF5_LIMIT = 4000000L;
 static int lastfilter = -1;
 int thefilter;
 
+	checkRelays(frequency, nocache);
+	
 	if (frequency < LPF5_LIMIT)			thefilter = 5;
 	else if (frequency < LPF4_LIMIT)	thefilter = 4;
 	else if (frequency < LPF3_LIMIT)	thefilter = 3;
@@ -306,7 +514,8 @@ int thefilter;
 }
 
 
-/****************************************************************************
+/*
+*****************************************************************************
 *	TX / RX Switching
 ****************************************************************************/
 
@@ -344,10 +553,19 @@ float savedDACVol;				//	must restore this because modulator may need to
 		enableTXAudio(txon, mode);
 //		usleep(5000);
 		gpioWrite(GPIO_PWRAMP_ON_line, 1);
+		setRelayTXANT(true);
+		setRelayPwramp(true);
+		setRelayTXMixer(true);
+		setRelayRXMixer(false);
+
 		}
 	else
 		{
 		enableTXAudio(txon, mode);
+		setRelayTXMixer(false);
+		setRelayPwramp(false);
+		setRelayTXANT(false);
+		setRelayRXMixer(true);
 		gpioWrite(GPIO_notTX_line, 1);
 		gpioWrite(GPIO_PWRAMP_ON_line, 0);
 //		usleep(500);
@@ -384,7 +602,10 @@ static bool keyed;
 	//	rx is enabled and tx and power amp are disabled
 int initControl(void)
 {
-int result =  initGPIO();
+int result;
+
+	result = (	(initGPIO() == true)
+			&&	(initRelays() == true)	);
 	if (result)
 		enableTX(false, NORMAL_AUDIO);
 	return result;
@@ -392,6 +613,7 @@ int result =  initGPIO();
 
 void uninitControl(void)
 {
+	uninitRelays();
 	if (gChip)
 		gpiod_chip_close(gChip);
 }

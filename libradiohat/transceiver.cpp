@@ -277,7 +277,7 @@ int c;
 								if (VFOa < 3300000L) VFOa = 3300000L;
 								if (VFOa > 32000000L) VFOa = 32000000L;
 								setVFO(VFOa);
-								checkLPF(VFOa, true);
+								checkLPF(VFOa, false);
 								}
 							else printf("%c%c%011li;", cmdbyte1, cmdbyte2, VFOa);
 							break;
@@ -633,7 +633,7 @@ const int num_weights = sizeof(weights)/sizeof(*weights);
 			if (rx_freq < 3500000L) rx_freq = 3500000L;
 			if (rx_freq > 32000000L) rx_freq = 32000000L;
 			setVFO(rx_freq);
-			checkLPF(rx_freq, true);
+			checkLPF(rx_freq, false);
 
 			//	update these display fields on all keystrokes
 			move(TXRX_LINE,0);
@@ -747,7 +747,7 @@ const char * exitmsgs[] =
 
 	if (exitcode == 0)
 		{
-		checkLPF(STARTFREQUENCY, true);
+		checkLPF(STARTFREQUENCY, true);		//	force uncached frequency set
 		initVSWR();					//	optional device - ignore errors
 
 		if (!initonly)
