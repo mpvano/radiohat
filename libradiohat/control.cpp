@@ -1,5 +1,5 @@
 /*
-**************************************** February 23, 2023 at 10:59:26 AM CST
+**************************************** March 22, 2023 at 11:56:38 AM CDT
 *****************************************************************************
 *
 *	A simple example program for a Zero IF Quadrature transceiver
@@ -29,6 +29,7 @@
 #include "control.h"
 #include "codec.h"
 
+void checkRelays(uint32_t frequency, bool nocache);	//	forward reference
 
 
 /*
@@ -60,68 +61,7 @@
 *		gpio=17=a3
 *
 ****************************************************************************/
-//	SEE BELOW: 0-6 are RESERVED
-//	Unique to my transceiver box
-#define GPIO_RSTFilter	26		//	pulsed to reset latching relays
-#define GPIO_B1Filter	7		//	10 meters - NOTE: Relay DISABLES filter 
-#define GPIO_B2Filter	8		//	15 meters
-#define GPIO_B3Filter	9		//	20 meters
-#define GPIO_B4Filter	10		//	40 meters
-#define GPIO_B5Filter	11		//	80 meters
-#define GPIO_TXRXRelay	12		//	High switches TX->Filters else RX->Filters
-#define GPIO_PWRAMP_ON	13		//	High enables Power amp Bias
-//	14-21 are RESERVED
-#define GPIO_notTX		22		//	a low enables the tx mixer HW
-#define GPIO_notRX		23		//	a low enables the rx mixer HW
-
-//	For current and future features of this software
-#define GPIO_KeyerDIT	24		//	hw keying and ptt inputs
-#define GPIO_KeyerDAH	25
-//#define GPIO_SKeyIn		26
-#define GPIO_PTTIn		27
-#define GPIO_Keyer_KEYDOWN GPIO_KeyerDAH
-
-//////////////////////////////////////////////////////////////////////////////
-//	THE REST ARE RESERVED AND SHOULDN'T BE USED BY THIS MODULE
-#define GPIO_ID_SD		0		//	I2C RESERVED BY OPERATING SYSTEM
-#define GPIO_ID_SC		1		//	I2C RESERVED BY OPERATING SYSTEM
-#define GPIO_SDA		2		//	RESERVED FOR GENERAL PURPOSE I2C
-#define GPIO_SCL		3		//	RESERVED FOR GENERAL PURPOSE I2C
-#define GPCLK0			4		//	RESERVED FOR ONEWIRE BUS
-#define GPIO_SHUTDOWN1	5		//	pin 1 of gpio-shutdown overlay switch
-#define GPIO_SHUTDOWN2	6		//	pin 2 of gpio-shutdown overlay switch
-
-#define GPIO_UART0_TX	14		//	RESERVED
-#define GPIO_UART0_RX	15		//	RESERVED
-#define GPIO_CTS		16		//	RESERVED
-#define GPIO_RTS		17		//	WSJT-X and others can assert RTS for PTT
-
-#define GPIO_PCM_CLK	18		//	USED BY AUDIO HARDWARE I2S
-#define GPIO_PCM_FS		19		//	USED BY AUDIO HARDWARE I2S
-#define GPIO_PCM_DIN	20		//	USED BY AUDIO HARDWARE I2S
-#define GPIO_PCM_DOUT	21		//	USED BY AUDIO HARDWARE I2S
-//////////////////////////////////////////////////////////////////////////////
-
-//	needs globals to store handles for now
 #define	CONSUMER	"RadioHat"
-struct gpiod_line * GPIO_RSTFilter_line; 
-struct gpiod_line * GPIO_B1Filter_line; 
-struct gpiod_line * GPIO_B2Filter_line; 
-struct gpiod_line * GPIO_B3Filter_line; 
-struct gpiod_line * GPIO_B4Filter_line; 
-struct gpiod_line * GPIO_B5Filter_line; 
-struct gpiod_line * GPIO_TXRXRelay_line; 
-struct gpiod_line * GPIO_PWRAMP_ON_line;
-struct gpiod_line * GPIO_notTX_line;
-struct gpiod_line * GPIO_notRX_line;
-struct gpiod_line * GPIO_KeyerDIT_line; 
-struct gpiod_line * GPIO_KeyerDAH_line;
-struct gpiod_line * GPIO_RTS_line;
-
-// struct gpiod_line GPIO_SKeyIn_line; 
-struct gpiod_line * GPIO_PTTIn_line;
-
-
 char const * chipname = "gpiochip0";
 struct gpiod_chip *gChip;
 
@@ -166,6 +106,68 @@ int gpioRead(struct gpiod_line * line)
 {
 	return gpiod_line_get_value(line);
 }
+
+
+#ifdef USE_ALL_GPIO
+//	SEE BELOW: 0-6 are RESERVED
+//	Unique to my transceiver box
+#define GPIO_RSTFilter	26		//	pulsed to reset latching relays
+#define GPIO_B1Filter	7		//	10 meters - NOTE: Relay DISABLES filter 
+#define GPIO_B2Filter	8		//	15 meters
+#define GPIO_B3Filter	9		//	20 meters
+#define GPIO_B4Filter	10		//	40 meters
+#define GPIO_B5Filter	11		//	80 meters
+#define GPIO_TXRXRelay	12		//	High switches TX->Filters else RX->Filters
+#define GPIO_PWRAMP_ON	13		//	High enables Power amp Bias
+//	14-21 are RESERVED
+#define GPIO_notTX		22		//	a low enables the tx mixer HW
+#define GPIO_notRX		23		//	a low enables the rx mixer HW
+
+//	For current and future features of this software
+#define GPIO_KeyerDIT	24		//	hw keying and ptt inputs
+#define GPIO_KeyerDAH	25
+//#define GPIO_SKeyIn		26
+#define GPIO_PTTIn		27
+#define GPIO_Keyer_KEYDOWN GPIO_KeyerDAH
+
+//////////////////////////////////////////////////////////////////////////////
+//	THE REST ARE RESERVED AND SHOULDN'T BE USED BY THIS MODULE
+#define GPIO_ID_SD		0		//	I2C RESERVED BY OPERATING SYSTEM
+#define GPIO_ID_SC		1		//	I2C RESERVED BY OPERATING SYSTEM
+#define GPIO_SDA		2		//	RESERVED FOR GENERAL PURPOSE I2C
+#define GPIO_SCL		3		//	RESERVED FOR GENERAL PURPOSE I2C
+#define GPCLK0			4		//	RESERVED FOR ONEWIRE BUS
+#define GPIO_SHUTDOWN1	5		//	pin 1 of gpio-shutdown overlay switch
+#define GPIO_SHUTDOWN2	6		//	pin 2 of gpio-shutdown overlay switch
+
+#define GPIO_UART0_TX	14		//	RESERVED
+#define GPIO_UART0_RX	15		//	RESERVED
+#define GPIO_CTS		16		//	RESERVED
+#define GPIO_RTS		17		//	WSJT-X and others can assert RTS for PTT
+
+#define GPIO_PCM_CLK	18		//	USED BY AUDIO HARDWARE I2S
+#define GPIO_PCM_FS		19		//	USED BY AUDIO HARDWARE I2S
+#define GPIO_PCM_DIN	20		//	USED BY AUDIO HARDWARE I2S
+#define GPIO_PCM_DOUT	21		//	USED BY AUDIO HARDWARE I2S
+//////////////////////////////////////////////////////////////////////////////
+
+//	needs globals to store handles for now
+struct gpiod_line * GPIO_RSTFilter_line; 
+struct gpiod_line * GPIO_B1Filter_line; 
+struct gpiod_line * GPIO_B2Filter_line; 
+struct gpiod_line * GPIO_B3Filter_line; 
+struct gpiod_line * GPIO_B4Filter_line; 
+struct gpiod_line * GPIO_B5Filter_line; 
+struct gpiod_line * GPIO_TXRXRelay_line; 
+struct gpiod_line * GPIO_PWRAMP_ON_line;
+struct gpiod_line * GPIO_notTX_line;
+struct gpiod_line * GPIO_notRX_line;
+struct gpiod_line * GPIO_KeyerDIT_line; 
+struct gpiod_line * GPIO_KeyerDAH_line;
+struct gpiod_line * GPIO_RTS_line;
+
+// struct gpiod_line GPIO_SKeyIn_line; 
+struct gpiod_line * GPIO_PTTIn_line;
 
 
 //	opens all the lines and saves global handles to them
@@ -240,6 +242,159 @@ struct gpiod_chip * line;
 
 	return result;
 }
+
+/*
+*****************************************************************************
+*	support functions for QRP labs filter board
+*
+*	Note that the QRP labs filter board has funny wiring for filter 1.
+*	It is DISABLED by activating the coil! (I think - it's confusing!)
+****************************************************************************/
+
+//	called to see if need to update LPF setting
+//	The cache argument is only used with latching relays to decide whether
+//	we can skip the tedious and slow switching procedure they require.
+void checkLPF_GPIO(uint32_t frequency, bool nocache)
+{
+const uint32_t LPF1_LIMIT = 30000000L;
+const uint32_t LPF2_LIMIT = 21500000L;
+const uint32_t LPF3_LIMIT = 14500000L;
+const uint32_t LPF4_LIMIT = 7500000L;
+const uint32_t LPF5_LIMIT = 4000000L;
+
+static int lastfilter = -1;
+int thefilter;
+
+	if (frequency < LPF5_LIMIT)			thefilter = 5;
+	else if (frequency < LPF4_LIMIT)	thefilter = 4;
+	else if (frequency < LPF3_LIMIT)	thefilter = 3;
+	else if (frequency < LPF2_LIMIT)	thefilter = 2;
+	else thefilter = 1;
+	
+	//	Should rewrite to use a constant table for clarity and efficiency
+	if (nocache || (lastfilter != thefilter))
+		{
+		switch (thefilter)		//	enable the correct filter
+			{
+			default:
+			case 1:
+				gpioWrite(GPIO_B1Filter_line, 0);	//	filter one enabled
+				gpioWrite(GPIO_B2Filter_line, 0);
+				gpioWrite(GPIO_B3Filter_line, 0);
+				gpioWrite(GPIO_B4Filter_line, 0);
+				gpioWrite(GPIO_B5Filter_line, 0);
+				break;
+			case 2:
+				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
+				gpioWrite(GPIO_B2Filter_line, 1);
+				gpioWrite(GPIO_B3Filter_line, 0);
+				gpioWrite(GPIO_B4Filter_line, 0);
+				gpioWrite(GPIO_B5Filter_line, 0);
+				break;
+			case 3:
+				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
+				gpioWrite(GPIO_B2Filter_line, 0);
+				gpioWrite(GPIO_B3Filter_line, 1);
+				gpioWrite(GPIO_B4Filter_line, 0);
+				gpioWrite(GPIO_B5Filter_line, 0);
+				break;
+			case 4:
+				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
+				gpioWrite(GPIO_B2Filter_line, 0);
+				gpioWrite(GPIO_B3Filter_line, 0);
+				gpioWrite(GPIO_B4Filter_line, 1);
+				gpioWrite(GPIO_B5Filter_line, 0);
+				break;
+			case 5:
+				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
+				gpioWrite(GPIO_B2Filter_line, 0);
+				gpioWrite(GPIO_B3Filter_line, 0);
+				gpioWrite(GPIO_B4Filter_line, 0);
+				gpioWrite(GPIO_B5Filter_line, 1);
+				break;
+			}
+		lastfilter = thefilter;		//	update the cache
+		}
+}
+#else	// USE_ALL_GPIO
+
+/*
+*****************************************************************************
+* This version of the control code uses minimal GPIO functionality.
+*
+* Note that the I2C functionality is always included - either way -
+* but is not used if the I2C gpio devices is missing at run time.
+*
+*****************************************************************************/
+
+#define GPIO_notTX		22		//	a low enables the tx mixer HW
+#define GPIO_notRX		23		//	a low enables the rx mixer HW
+
+//	For current and future features of this software
+#define GPIO_KeyerDIT	24		//	hw keying and ptt inputs
+#define GPIO_KeyerDAH	25
+//#define GPIO_SKeyIn		26
+#define GPIO_PTTIn		27
+#define GPIO_Keyer_KEYDOWN GPIO_KeyerDAH
+
+
+//	needs globals to store handles for now
+struct gpiod_line * GPIO_notTX_line;
+struct gpiod_line * GPIO_notRX_line;
+struct gpiod_line * GPIO_KeyerDIT_line; 
+struct gpiod_line * GPIO_KeyerDAH_line;
+
+// struct gpiod_line GPIO_SKeyIn_line; 
+struct gpiod_line * GPIO_PTTIn_line;
+
+
+
+//	opens all the lines and saves global handles to them
+bool initGPIO()
+{
+bool result = false;
+struct gpiod_chip * line;
+
+	gChip = gpiod_chip_open_by_name(chipname);
+	if (!gChip)
+		perror("Open chip failed\n");
+	else
+		{
+		//	setup the output lines
+		result = ((GPIO_notTX_line 		= openLineForOutput(GPIO_notTX))
+				 &&	(GPIO_notRX_line 	= openLineForOutput(GPIO_notRX))
+				 );	
+		if (!result)
+			perror("Requesting line(s) as output failed\n");
+		else
+		    {
+		    //	setup the input lines
+		    //	These pins are monitored by this program for keying
+		    result = (	(GPIO_KeyerDIT_line = openLineForInput(GPIO_KeyerDIT))
+				 	&&	(GPIO_KeyerDAH_line = openLineForInput(GPIO_KeyerDAH))
+				 	&&	(GPIO_PTTIn_line 	= openLineForInput(GPIO_PTTIn))
+					);
+			if (!result)
+				perror("Requesting line(s) as input failed\n");
+			}				
+		}
+	
+	if (result)
+		{
+		//	disable the Hat's TX mixer and enable the RX mixer
+		result = (	(gpiod_line_set_value(GPIO_notTX_line,1) >= 0)
+				&&	(gpiod_line_set_value(GPIO_notRX_line, 0) >= 0)
+				);
+		if (!result)
+			perror("Setting output lines failed\n");
+		}
+
+	if (!result && gChip)
+		gpiod_chip_close(gChip);
+	return result;
+}
+
+#endif	// USE_ALL_GPIO
 
 /*
 *****************************************************************************
@@ -348,6 +503,12 @@ int portvalue = readI2CGPIO(OLATB);
 
 
 
+/*****************************************************************************
+*	support functions for QRP labs filter board
+*
+*	Note that the QRP labs filter board has funny wiring for filter 1.
+*	It is DISABLED by activating the coil! (I think - it's confusing!)
+****************************************************************************/
 void checkRelays(uint32_t frequency, bool nocache)
 {
 const uint32_t LPF1_LIMIT = 30000000L;
@@ -439,83 +600,6 @@ int uninitRelays(void)
 
 /*
 *****************************************************************************
-*	support functions for QRP labs filter board
-*
-*	Note that the QRP labs filter board has funny wiring for filter 1.
-*	It is DISABLED by activating the coil! (I think - it's confusing!)
-****************************************************************************/
-
-//	called to see if need to update LPF setting
-//	The cache argument is only used with latching relays to decide whether
-//	we can skip the tedious and slow switching procedure they require.
-void checkLPF(uint32_t frequency, bool nocache)
-{
-const uint32_t LPF1_LIMIT = 30000000L;
-const uint32_t LPF2_LIMIT = 21500000L;
-const uint32_t LPF3_LIMIT = 14500000L;
-const uint32_t LPF4_LIMIT = 7500000L;
-const uint32_t LPF5_LIMIT = 4000000L;
-
-static int lastfilter = -1;
-int thefilter;
-
-	checkRelays(frequency, nocache);
-	
-	if (frequency < LPF5_LIMIT)			thefilter = 5;
-	else if (frequency < LPF4_LIMIT)	thefilter = 4;
-	else if (frequency < LPF3_LIMIT)	thefilter = 3;
-	else if (frequency < LPF2_LIMIT)	thefilter = 2;
-	else thefilter = 1;
-	
-	//	Should rewrite to use a constant table for clarity and efficiency
-	if (nocache || (lastfilter != thefilter))
-		{
-		switch (thefilter)		//	enable the correct filter
-			{
-			default:
-			case 1:
-				gpioWrite(GPIO_B1Filter_line, 0);	//	filter one enabled
-				gpioWrite(GPIO_B2Filter_line, 0);
-				gpioWrite(GPIO_B3Filter_line, 0);
-				gpioWrite(GPIO_B4Filter_line, 0);
-				gpioWrite(GPIO_B5Filter_line, 0);
-				break;
-			case 2:
-				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
-				gpioWrite(GPIO_B2Filter_line, 1);
-				gpioWrite(GPIO_B3Filter_line, 0);
-				gpioWrite(GPIO_B4Filter_line, 0);
-				gpioWrite(GPIO_B5Filter_line, 0);
-				break;
-			case 3:
-				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
-				gpioWrite(GPIO_B2Filter_line, 0);
-				gpioWrite(GPIO_B3Filter_line, 1);
-				gpioWrite(GPIO_B4Filter_line, 0);
-				gpioWrite(GPIO_B5Filter_line, 0);
-				break;
-			case 4:
-				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
-				gpioWrite(GPIO_B2Filter_line, 0);
-				gpioWrite(GPIO_B3Filter_line, 0);
-				gpioWrite(GPIO_B4Filter_line, 1);
-				gpioWrite(GPIO_B5Filter_line, 0);
-				break;
-			case 5:
-				gpioWrite(GPIO_B1Filter_line, 1);	//	filter one disabled
-				gpioWrite(GPIO_B2Filter_line, 0);
-				gpioWrite(GPIO_B3Filter_line, 0);
-				gpioWrite(GPIO_B4Filter_line, 0);
-				gpioWrite(GPIO_B5Filter_line, 1);
-				break;
-			}
-		lastfilter = thefilter;		//	update the cache
-		}
-}
-
-
-/*
-*****************************************************************************
 *	TX / RX Switching
 ****************************************************************************/
 
@@ -529,9 +613,14 @@ int isKeyInputActive(void)
 //	single point to poll for external PTT requests
 bool isTXRequested(void)
 {
+#ifdef USE_ALL_GPIO
 bool request = !gpioRead(GPIO_PTTIn_line)
-//			|| !gpioRead(GPIO_SKeyIn_line)
-			|| !gpioRead(GPIO_RTS_line);
+			|| !gpioRead(GPIO_RTS_line);		//	we no longer check for FT8 TX this way!
+//			|| !gpioRead(GPIO_SKeyIn_line);
+#else
+bool request = !gpioRead(GPIO_PTTIn_line);
+//			|| !gpioRead(GPIO_SKeyIn_line);
+#endif
 	return request;
 }
 
@@ -546,13 +635,17 @@ float savedDACVol;				//	must restore this because modulator may need to
 		{
 		savedDACVol = getDACVol();
 		setDACVol(0);						//	to prevent a click
+#ifdef USE_ALL_GPIO
 		gpioWrite(GPIO_TXRXRelay_line, 1);
+#endif
 		gpioWrite(GPIO_notRX_line, 1);
-//		gpioWrite(GPIO_PWRAMP_ON_line, 1);
 		gpioWrite(GPIO_notTX_line, 0);
 		enableTXAudio(txon, mode);
 //		usleep(5000);
+
+#ifdef USE_ALL_GPIO
 		gpioWrite(GPIO_PWRAMP_ON_line, 1);
+#endif
 		setRelayTXANT(true);
 		setRelayPwramp(true);
 		setRelayTXMixer(true);
@@ -566,10 +659,15 @@ float savedDACVol;				//	must restore this because modulator may need to
 		setRelayPwramp(false);
 		setRelayTXANT(false);
 		setRelayRXMixer(true);
-		gpioWrite(GPIO_notTX_line, 1);
+		
+#ifdef USE_ALL_GPIO
 		gpioWrite(GPIO_PWRAMP_ON_line, 0);
 //		usleep(500);
 		gpioWrite(GPIO_TXRXRelay_line, 0);
+#endif
+
+//		usleep(500);
+		gpioWrite(GPIO_notTX_line, 1);
 		gpioWrite(GPIO_notRX_line,  0);
 		setDACVol(94);
 //		setDACVol(savedDACVol);
@@ -617,3 +715,15 @@ void uninitControl(void)
 	if (gChip)
 		gpiod_chip_close(gChip);
 }
+
+
+void checkLPF(uint32_t frequency, bool nocache)
+{
+	checkRelays(frequency, nocache);
+	
+#ifdef USE_ALL_GPIO
+	checkLPF_GPIO(frequency, nocache);
+#endif
+
+}
+

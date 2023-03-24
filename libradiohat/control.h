@@ -1,8 +1,11 @@
 #ifndef __CONTROL_H__
 #define __CONTROL_H__
 
+//#define USE_ALL_GPIO
+
 #include <stdint.h>
 #include "codec.h"
+
 
 extern "C"
 {
